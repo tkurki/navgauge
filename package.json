@@ -1,0 +1,22 @@
+{
+  "name": "navidata",
+  "description": "NMEA 0183 and NMEA 2000 data server & html application"
+  "version": "0.1-alpha",
+  "author": {
+    "name": "Teppo Kurki",
+    "email": "tjk@iki.fi"
+  },
+  "licenses": [
+    "MIT"
+  ],
+  "dependencies": {
+    "baconjs": "*",
+    "optimist": "*",
+    "nmea" : "*",
+    "node-static": "*",
+    "primus": "*",
+    "dgram": "*",
+    "http": "*"
+  },
+  "engine": "0.10.16"
+}

@@ -1,0 +1,387 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Rasnav</title>
+    <script src="leaflet-0.6.4/leaflet.js"></script>
+    <script type="text/javascript" src="lib/Bacon.min.js"></script>
+    <script src="/primus/primus.js"></script>
+    <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
+    <script type="text/javascript" src="lib/Bacon.min.js"></script>
+    <script type="text/javascript" src="slidingTimeWindow.js"></script>
+    <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
+    <link rel="stylesheet" href="styles/colors.css"/>
+    <style type="text/css">
+        html {
+            margin: 0px;
+            height: 100%;
+        }
+
+        body {
+            margin: 0px;
+            height: 100%;
+        }
+
+        #compass {
+            float: right;
+            width: 50%;
+        }
+
+        #container {
+            height: 100%;
+        }
+
+        #map {
+            width: 50%;
+            height: 100%;
+        }
+
+        @media (max-width: 600px) {
+            #map {
+                display: none;
+            }
+
+            #compass {
+                width: 100%;
+            }
+        }
+
+        svg * {
+            vector-effect: non-scaling-stroke;
+            font-family: sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+<div id="container" class="sp">
+    <div id="compass">
+        <svg
+                xmlns="http://www.w3.org/2000/svg"
+                version="1.0"
+                viewBox="0, 0, 800, 800"
+                preserveAspectRatio="xMidYMid meet"
+                id="windrose"
+                class="s1">
+            <defs>
+                <linearGradient id="Gradient2" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#ff4f00"/>
+                    <stop offset="100%" stop-color="#0c5da5"/>
+                </linearGradient>
+            </defs>
+            <g id="gportwindsector" transform="rotate(0 400 400)">
+                <path id="portwindsector" d="M400,400 v-300 a300,300 1 0,1 0,0 z" fill="#ffdddd" stroke="none"></path>
+            </g>
+            <g id="gstarboardwindsector" transform="rotate(0 400 400)">
+                <path id="starboardwindsector" d="M400,400 v-300 a300,300 1 0,1 0,0 z" fill="#ddffdd"
+                      stroke="none"></path>
+            </g>
+
+            <g id="rose" class="rose">
+                <g id="edge" class="p1">
+                    <g id="tickmarks"/>
+                    <circle cx="400" cy="400" r="320" fill="none" stroke-width="2px"/>
+                    <path d="M 700 400 A 300 300 0 1 1  100,400 A 300 300 0 1 1  700 400 z"
+                          class="p-1" fill="url(#Gradient2)" opacity="0.8"
+                          id="kreis" stroke-width="2px"/>
+                    <g id="tickmarksTop"/>
+                </g>
+
+                <g id="mark" transform="rotate(0 400 400)">
+                    <path d="M 385,60 L 415,60 400,90 z" class="mark"/>
+                    <circle cx="400" cy="70" r="14" stroke="none" fill="white"/>
+                    <text id="marktext" x="400" y="70" class="marktext" text-anchor="middle" dominant-baseline="middle"
+                          transform="rotate(0 400 70)">000
+                    </text>
+                    <circle cx="400" cy="118" r="18" stroke="red" fill="white"/>
+                    <text id="markdistance" x="400" y="118" class="marktext" text-anchor="middle"
+                          dominant-baseline="middle"
+                          transform="rotate(0 400 114)">0.0
+                    </text>
+                </g>
+            </g>
+            </g>
+
+            <rect x="370" y="70" rx="5" ry="5" width="60" height="40" class="rose"/>
+            <text id="tracktruetext" x="400" y="90" text-anchor="middle" dominant-baseline="middle" font-size="25"
+                  class="negativegaugetext">000
+            </text>
+
+            <g id="windmarker" transform="rotate(23 400 400)" class="truewind">
+                <path d="M 400,100 L  385,130  a 20,20 0 1,0 30,0 z"/>
+                <text id="windmarkertext" x="400" y="140" text-anchor="middle" dominant-baseline="middle"
+                      class="text">9.9
+                </text>
+                <path d="M 390,400 l 10,-300 10,300 z" style="fill:#00FF00;stroke:#00FF00;stroke-width:1"
+                      transform="rotate(30 400 400)"/>
+                <path d="M 390,400 l 10,-300 10,300 z" style="fill:#ff0000;stroke:#ff0000;stroke-width:1"
+                      transform="rotate(-30 400 400)"/>
+            </g>
+
+            <g id="apparentwindmarker" transform="rotate(90 400 400)" class="apparentwind">
+                <path d="M 400,100 L  385,70  a 20,20 0 1,1 30,0 z"/>
+                <text id="apparentwindmarkertext" x="400" y="60" text-anchor="middle" dominant-baseline="middle"
+                      class="text">3.1
+                </text>
+            </g>
+
+            <g
+                    id="boat"
+                    transform="rotate(90 100 100) translate(150 -450) scale(2.5)">
+                <path
+                        style="stroke:#00ff00;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                        d="m 0,100 c 150,-100 200,-35 200,-35 0,35 0,35 0,35"
+                        id="path2988"
+                        class="boat"/>
+                <path
+                        style="stroke:#dd0000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+                        d="m 200,100 c 0,35 0,35 0,35  0,0 -70,65 -200,-35"
+                        id="path2989"
+                        class="boat"/>
+            </g>
+
+            <text id="speed" x="400" y="400" text-anchor="middle" dominant-baseline="middle" font-size="60">-</text>
+
+            <text id="depth" x="800" y="60" text-anchor="end" dominant-baseline="text-after-edge" font-size="60"
+                  class="positivegaugetext">99.9
+            </text>
+
+            <g transform="translate(700 80)">
+                <path id="depthSpark" class="sparkline" d="M 5,5 l 10,10 -10,0 z"/>
+            </g>
+
+        </svg>
+    </div>
+    <div id="map">Map</div>
+</div>
+
+
+<script>
+    var trackTrue = 0;
+    var bearingToMark = 0;
+    var lastAutopilot = 0;
+    var lastDepth = 0;
+
+    var drawSparkline = function (selector, data, width, height) {
+        var now = new Date().getTime();
+        var x = d3.scale.linear().domain([d3.min(data, function (d) {
+            return d.timestamp - now;
+        }),
+            d3.max(data, function (d) {
+                return d.timestamp - now;
+            })]).range([0, width]);
+        var y = d3.scale.linear().domain([d3.min(data, function (d) {
+            return d.value
+        }),
+            d3.max(data, function (d) {
+                return d.value
+            })]).range([0, height]);
+
+        var line = d3.svg.line()
+            // assign the X function to plot our line as we wish
+                .x(function (d) {
+                    return x(d.timestamp - now);
+                })
+                .y(function (d) {
+                    return y(d.value);
+                });
+        var d = d3.select(selector);
+        d.attr("d", line(data));
+    }
+
+    var depthStream = new Bacon.Bus();
+    depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
+        drawSparkline("#depthSpark", data, 100, 50);
+    });
+
+    var trueWindAngleStream = new Bacon.Bus();
+    trueWindAngleStream.slidingTimeWindow(30 * 1000).onValue(function (data) {
+        var twa_max = 0;
+        var twa_min = 360;
+        data.forEach(function (item) {
+            if (item.value > twa_max) {
+                twa_max = item.value
+            }
+            ;
+            if (item.value < twa_min) {
+                twa_min = item.value
+            }
+        });
+        d3.select("#portwindsector").attr("d", arcForAngle(twa_max - twa_min));
+        d3.select("#gportwindsector").attr("transform", "rotate(" + (twa_min - 30) + " 400 400)");
+        d3.select("#starboardwindsector").attr("d", arcForAngle(twa_max - twa_min));
+        d3.select("#gstarboardwindsector").attr("transform", "rotate(" + (twa_min + 30) + " 400 400)");
+    });
+
+
+
+    var primus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
+            {reconnect: {
+                maxDelay: 60000,
+                minDelay: 500,
+                retries: Infinity
+            }});
+
+    var lastLon = 0;
+    lastLat = 0;
+    primus.on('data', function message(data) {
+        switch (data.type) {
+            case 'depth':
+                var depth = Number(data.depth);
+                if (depth < 200) {
+                    d3.select('#depth').text(depth.toFixed(1)).attr("display", "inline");
+                    depthStream.push(Number(depth));
+                    lastDepth = new Date().getTime();
+                }
+                break;
+            case 'course':
+                trackTrue = data.heading;
+                d3.select('#tracktruetext').text(data.heading.toFixed(0) + '°');
+                rotateAnimated('#rose', -1 * data.heading, 400, 400, 200);
+                d3.select('#marktext').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 70)");
+                d3.select('#markdistance').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 118)");
+                break;
+            case 'speed':
+                d3.select('#speed').text(data.knots.toFixed(1));
+                break;
+            case 'position':
+                if (lastLat - data.lat != 0 || lastLon - data.lon != 0) {
+                    center = [data.lat, data.lon];
+                    map.panTo(center);
+                    L.marker(center, {icon: pointIcon}).addTo(map);
+                }
+                lastLat = data.lat;
+                lastLon = data.lon;
+                break;
+            case 'wind':
+                switch (data.reference) {
+                    case 'apparent':
+                        rotateAnimated('#apparentwindmarker', data.angle, 400, 400, 20);
+                        d3.select("#apparentwindmarkertext").attr("transform", "rotate(" + (-1 * data.angle) + " 400 60)");
+                        d3.select("#apparentwindmarkertext").text(Number(data.speed).toFixed(1));
+                        break;
+                    case 'true boat':
+                        rotateAnimated('#windmarker', data.angle, 400, 400, 20);
+                        d3.select("#windmarkertext").attr("transform", "rotate(" + (-1 * data.angle) + " 400 140)");
+                        d3.select("#windmarkertext").text(Number(data.speed).toFixed(1));
+                        trueWindAngleStream.push(Number(data.angle));
+                }
+                break;
+            case '2waypoint':
+                d3.select('#markdistance').text(Number(data.distance).toFixed(1));
+                bearingToMark = data.bearing;
+                rotateAnimated('#mark', data.bearing, 400, 400, 200);
+                d3.select("#mark").attr("display", "inline");
+                d3.select('#marktext').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 70)");
+                d3.select('#markdistance').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 118)");
+                d3.select('#marktext').text(data.bearing.toFixed(0));
+                lastAutopilot = new Date().getTime();
+                break;
+        }
+
+    });
+
+    setInterval(function hideInactiveElements() {
+        if (new Date().getTime() - lastAutopilot > 60 * 1000) {
+            d3.select("#mark").attr("display", "none");
+        }
+        if (new Date().getTime() - lastDepth > 5 * 1000) {
+            d3.select("#depth").attr("display", "none");
+        }
+    }, 5000);
+
+
+    function arcForAngle(angle) {
+        return 'M400,400 v-300 a300,300 1 0,1 ' +
+                Math.sin(angle * Math.PI / 180) * 300 + ',' +
+                (1 - Math.cos(angle * Math.PI / 180)) * 300 + ' z';
+    }
+
+    var rotateAnimated = function (selector, angleTo, x, y, millis) {
+        var d3g = d3.select(selector);
+        var previousTransform = d3g.attr('transform');
+        var tween = function (d, i, a) {
+            return d3.interpolateString(previousTransform, 'rotate(' + angleTo + " " + x + " " + y + ")");
+        }
+        d3g.transition().duration(millis).attrTween('transform', tween);
+    }
+
+    var map = L.map('map').setView([60.1, 24.8], 13);
+
+
+    L.tileLayer.wms("http://kartta.liikennevirasto.fi/meriliikenne//dgds/wms_ip/merikartta", {
+        layers: 'cells',
+        styles: 'style-id-203',
+        format: 'image/png',
+        transparent: true
+    }).addTo(map);
+
+
+    var pointIcon = L.icon({
+        iconUrl: 'images/point.png',
+        shadowUrl: 'images/point.png',
+
+        iconSize: [10, 10], // size of the icon
+        shadowSize: [1, 1], // size of the shadow
+        iconAnchor: [5, 5], // point of the icon which will correspond to marker's location
+        shadowAnchor: [0, 0],  // the same for the shadow
+        popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
+    });
+</script>
+<script>
+    var edge = d3.select("#edge");
+    var tickmarks = d3.select("#tickmarks");
+    var tickmarksTop = d3.select("#tickmarksTop");
+    for (var i = 10; i < 360; i += 10) {
+        tickmarks.append("path").attr("id", "id10-" + i)
+                .attr("d", "m 400,80 L 400,100")
+                .attr("stroke-width", "1")
+                .attr("transform", "rotate(" + i + " 400 400)");
+    }
+    for (var i = 5; i < 360; i += 5) {
+        tickmarks.append("path").attr("id", "id5-" + i)
+                .attr("d", "m 400,90 L 400,100")
+                .attr("stroke-width", "1")
+                .attr("transform", "rotate(" + i + " 400 400)");
+    }
+    var dirs = ['N', 'E', 'S', 'W' ];
+    for (var i = 0; i < 360; i += 90) {
+        tickmarksTop.append("rect").attr("id", "box" + i)
+                .attr("x", "380")
+                .attr("y", "70")
+                .attr("width", "40")
+                .attr("height", "30")
+                .attr("transform", "rotate(" + i + " 400 400)")
+                .text(i);
+        tickmarksTop.append("text").attr("id", "bearing" + i)
+                .attr("x", "400")
+                .attr("y", "90")
+                .attr("text-anchor", "middle")
+                .attr("transform", "rotate(" + i + " 400 400)")
+                .attr("class", "text")
+                .text(dirs[0]);
+        dirs = dirs.splice(1);
+    }
+    var dirs = ['NE', 'SE', 'SW', 'NW'];
+    for (var i = 45; i < 360; i += 90) {
+        tickmarks.append("rect").attr("id", "box" + i)
+                .attr("x", "385")
+                .attr("y", "80")
+                .attr("width", "30")
+                .attr("height", "20")
+                .attr("transform", "rotate(" + i + " 400 400)")
+                .text(i);
+        tickmarks.append("text").attr("id", "bearing" + i)
+                .attr("x", "400")
+                .attr("y", "95")
+                .attr("font-size", "80%")
+                .attr("text-anchor", "middle")
+                .attr("transform", "rotate(" + i + " 400 400)")
+                .attr("class", "text")
+                .text(dirs[0]);
+        dirs = dirs.splice(1);
+    }
+
+</script>
+</body>
+</html>

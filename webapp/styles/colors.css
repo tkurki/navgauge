@@ -1,0 +1,53 @@
+.s1 {
+    background-image: linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -o-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -moz-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -webkit-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -ms-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.09, rgb(87,87,87)),
+        color-stop(0.5, rgb(0,0,0))
+    );
+}
+.s1 .rose{stroke:#A61511;fill:lightgrey}
+.s1 .rose .text{stroke:#A61511;fill:#A61511}
+.s1 .apparentwind{fill:lightblue;stroke:white}
+.s1 .apparentwind .text{stroke:black}
+.s1 .truewind{fill:lightgreen;stroke:white}
+.s1 .truewind .text{stroke:black}
+.s1 .positivegaugetext {stroke:#FF928F;fill:#FF928F}
+.s1 .negativegaugetext {stroke:#A61511;fill:#A61511}
+.s1 .sparkline {stroke:#FF928F}
+
+
+
+.sp {
+    background-image: linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -o-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -moz-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -webkit-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+    background-image: -ms-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
+
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.09, rgb(87,87,87)),
+        color-stop(0.5, rgb(0,0,0))
+    );
+}
+.sp .rose {stroke:#A63400;fill:#679fd2}
+.sp .rose .text{stroke:#A63400;fill:#A63400}
+.sp .apparentwind{fill:#043a6b;stroke:white}
+.sp .apparentwind .text{stroke:white;fill:white}
+.sp .truewind{fill:#679fd2;stroke:black}
+.sp .truewind .text{stroke:black;fill:black}
+.sp .positivegaugetext {stroke:#679fd2;fill:#679fd2}
+.sp .sparkline {stroke:#679fd2}
+.sp .boat {fill:#26537c}
+.sp .mark {fill:none;stroke:#FF0000;stroke-width:8}
+.sp .marktext {fill:black;stroke:black}
