@@ -2,6 +2,8 @@
 
 **Navigation displays in your browser!**
 
+<img src="https://raw.github.com/wiki/tkurki/navgauge/img/navgauge.png" width=544 height=292/>
+
 Navgauge makes navigation data available via NMEA 0183 and NMEA 2000 (N2K) available on your browser in customizable displays.
 
 On the server side it is a Node.js http server application that pipes data from N2K and NMEA connections to the browser
@@ -93,10 +95,10 @@ I'd like to get more insight into navigation data
 - not use gpsd json? I wanted to have access to both raw & parsed nmea data. Adding another input stream for reading
 gpsd json might be a good idea.
 
-- not use [OpenCPN](http://opencpn.org/ocpn/)? Because it is not a browser based and as I understand it doesn't support N2K.
+- not use [OpenCPN](http://opencpn.org/ocpn/)? Because it is not browser based and as I understand it doesn't support N2K.
 
 - not use [Freeboard](http://www.42.co.nz/freeboard/)? Because it uses a serverside framework,
-I don't want the extra hassle of Arduino and it looks a bit complicated to get up and running
+I don't want the extra hassle of Arduino and it looks a bit complicated to get up and running.
 
 ## Help?
 
