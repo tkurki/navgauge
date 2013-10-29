@@ -4,7 +4,8 @@
 
 Navgauge makes navigation data available via NMEA 0183 and NMEA 2000 (N2K) available on your browser in customizable displays.
 
-On the server side it is a Node Js http server application that pipes data from N2K and NMEA connections to the browser via Websockets. 
+On the server side it is a Node.js http server application that pipes data from N2K and NMEA connections to the browser
+ via Websockets.
 
 On the browser it uses Javascript to update SVG gauges as data is received. Position is plotted on a WMS chart.
 
@@ -12,25 +13,37 @@ Access to N2K bus is available via [actisense-serial](https://github.com/canboat
 
 Navgauge uses gpspipe from [gpsd](http://catb.org/gpsd/) to access NMEA 0183 data. Any NMEA 0183 device available via gpsd can be used and adding support for previously unknown NMEA 0183 sentences is pretty straightforward.
 
-Captured data sets, either directly from actisense-serial and gpspipe or Navgauge-generated unified json stream, can be used to 'play back' real world data to use in debugging and development.
+Captured data sets, either directly from actisense-serial and gpspipe or Navgauge-generated unified json stream, can be
+used to 'play back' real world data to use in debugging and development.
 
 NMEA 0183 data can also be broadcast via UDP to be used in other applications such as INavX and iRegatta.
 
 ## Getting started with sample data
-0. Install Node JS
-1. Install tarball with npm
-    npm install https://github.com/tkurki/navgauge/tarball/master
-2. Start the server with a sample data from the boat Cassiopeia
-    navgauge/bin/cassiopeia
-3. Open http://localhost:8080/
+0. Install Node.js
+1. Install Navgauge from tarball:
+```
+npm install https://github.com/tkurki/navgauge/tarball/master
+```
+
+2. Start the server with a sample data from the boat Cassiopeia: 
+```
+navgauge/bin/cassiopeia
+```
+
+3. Open [http://localhost:8080/](http://localhost:8080/)
 
 ## Getting started with real data
 
-Navgauge uses shell commands to start CANboat command line tools `actisense-serial` and `analyzer` (N2K data) and `gpspipe` (NMEA 0183) so you need those installed and available on your `PATH`. Once you have command line access you can look at the data you are receiving and figure out how basic navigation data such as depth, speed, bearing and wind speed & direction are represented.
+Navgauge uses shell commands to start CANboat command line tools `actisense-serial` and `analyzer` (N2K data) and
+`gpspipe` (NMEA 0183) so those need available on your path.
 
- Then you need to come up with a stream setup for your boat, which is defined in a boat configuration file. Take a look at `cassiopeia` and `freya` under `lib/boats/`, roll your own and add .log() statements to the incoming   streams in `lib/streams.js` to see what your data actually looks like.
+Once you have command line access you can look at the
+data you have and figure out how basic navigation data such as speed, bearing and wind speed and direction are
+represented and figure out how to write the stream definition for your boat.
 
- Navgauge server is started with `bin/server.js` and takes the following options:
+Navgauge server is started with
+bin/server.js and takes the following options:
+
  ```
  Options:
    --n2k        actisense:/dev/USBxx|file:n2k.data[.gz]
@@ -48,6 +61,9 @@ Navgauge uses shell commands to start CANboat command line tools `actisense-seri
                                                              [required]
  ```
 
+
+ Take a look at `cassiopeia` and `freya` under `lib/boats/`, roll your own and add .log() statements to the incoming
+ streams in `lib/streams.js` to see what your data actually looks like.
 
 
 ## Why Navgauge?
@@ -74,8 +90,15 @@ I'd like to get more insight into navigation data
 
 ## Why..
 
-- not use gpsd json? I wanted to have access to both raw & parsed nmea data. Adding another input stream for reading gpsd json might be a good idea.
+- not use gpsd json? I wanted to have access to both raw & parsed nmea data. Adding another input stream for reading
+gpsd json might be a good idea.
 
 - not use [OpenCPN](http://opencpn.org/ocpn/)? Because it is not a browser based and as I understand it doesn't support N2K.
 
-- not use [Freeboard](http://www.42.co.nz/freeboard/)? Because it uses a serverside framework, I don't want the extra hassle of Arduino and it looks a bit complicated to get up and running
+- not use [Freeboard](http://www.42.co.nz/freeboard/)? Because it uses a serverside framework,
+I don't want the extra hassle of Arduino and it looks a bit complicated to get up and running
+
+## Help?
+
+This is a learning experience in many respects. If you see something that could be improved let me know. If you see
+something you think you could fix please do & send a pull request!
