@@ -2,7 +2,7 @@
 
 **Navigation displays in your browser!**
 
-<img src="https://raw.github.com/wiki/tkurki/navgauge/img/navgauge.png" width=544 height=292/>
+<img src="https://raw.github.com/wiki/tkurki/navgauge/img/navgauge.png" width="544" height="292"/>
 
 Navgauge makes navigation data available via NMEA 0183 and NMEA 2000 (N2K) available on your browser in customizable displays.
 
