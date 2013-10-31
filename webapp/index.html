@@ -142,13 +142,15 @@
 
             <text id="speed" x="400" y="400" text-anchor="middle" dominant-baseline="middle" font-size="60">-</text>
 
-            <text id="depth" x="800" y="60" text-anchor="end" dominant-baseline="text-after-edge" font-size="60"
-                  class="positivegaugetext">99.9
-            </text>
-
             <g transform="translate(700 80)">
                 <path id="depthSpark" class="sparkline" d="M 5,5 l 10,10 -10,0 z"/>
             </g>
+
+            <text x="800" y="60" text-anchor="end" dominant-baseline="text-after-edge"
+                  class="positivegaugetext">
+                <tspan id="depth" dy="0px" font-size="60">99.9</tspan>
+            </text>
+
 
         </svg>
     </div>
@@ -213,6 +215,19 @@
         d3.select("#gstarboardwindsector").attr("transform", "rotate(" + (twa_min + 30) + " 400 400)");
     });
 
+    var depthFontSize = function (depth) {
+        var minFontSize = 60;
+        var maxFontSize = 300;
+        var shallowThreshold = 6;
+        var minThreshold = 3;
+        if (depth > shallowThreshold) {
+            return minFontSize
+        }
+        if (depth < minThreshold) {
+            return maxFontSize;
+        }
+        return minFontSize + (shallowThreshold - depth) / (shallowThreshold - minThreshold) * (maxFontSize - minFontSize);
+    }
 
 
     var primus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
@@ -229,7 +244,13 @@
             case 'depth':
                 var depth = Number(data.depth);
                 if (depth < 200) {
-                    d3.select('#depth').text(depth.toFixed(1)).attr("display", "inline");
+                    var depthText = d3.select('#depth');
+                    depthText.text(depth.toFixed(1)).attr("display", "inline");
+                    var fontSize = depthFontSize(depth);
+                    depthText.attr('font-size', fontSize);
+                    depthText.attr('dy', (fontSize * 0.7 )-60);
+                    depthText.attr('fill', depth < 6 ? 'red' : null);
+                    depthText.attr('font-weight', depth < 6 ? 'bold' : null);
                     depthStream.push(Number(depth));
                     lastDepth = new Date().getTime();
                 }
