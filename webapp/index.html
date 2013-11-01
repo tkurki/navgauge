@@ -165,7 +165,7 @@
     var lastDepth = 0;
 
     var drawSparkline = function (selector, data, width, height) {
-        var now = new Date().getTime();
+        var now = Date.now();
         var x = d3.scale.linear().domain([d3.min(data, function (d) {
             return d.timestamp - now;
         }),
@@ -252,7 +252,7 @@
                     depthText.attr('fill', depth < 6 ? 'red' : null);
                     depthText.attr('font-weight', depth < 6 ? 'bold' : null);
                     depthStream.push(Number(depth));
-                    lastDepth = new Date().getTime();
+                    lastDepth = Date.now();
                 }
                 break;
             case 'course':
@@ -296,17 +296,17 @@
                 d3.select('#marktext').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 70)");
                 d3.select('#markdistance').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 118)");
                 d3.select('#marktext').text(data.bearing.toFixed(0));
-                lastAutopilot = new Date().getTime();
+                lastAutopilot = Date.now();
                 break;
         }
 
     });
 
     setInterval(function hideInactiveElements() {
-        if (new Date().getTime() - lastAutopilot > 60 * 1000) {
+        if (Date.now() - lastAutopilot > 60 * 1000) {
             d3.select("#mark").attr("display", "none");
         }
-        if (new Date().getTime() - lastDepth > 5 * 1000) {
+        if (Date.now() - lastDepth > 5 * 1000) {
             d3.select("#depth").attr("display", "none");
         }
     }, 5000);

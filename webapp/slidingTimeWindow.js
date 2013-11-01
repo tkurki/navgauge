@@ -1,7 +1,7 @@
 Bacon.Observable.prototype.slidingTimeWindow = function (windowDuration) {
     var addToWindow, now, withTimeStamp;
     now = function () {
-        return new Date().getTime();
+        return Date.now();
     };
     withTimeStamp = function (value) {
         return {
