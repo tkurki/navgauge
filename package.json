@@ -5,19 +5,22 @@
   "author": {
     "name": "Teppo Kurki",
     "email": "tjk@iki.fi"
-  }
-  ,
+  },
   "licenses": [
     "MIT"
   ],
   "dependencies": {
     "baconjs": "0.6",
     "optimist": "0.6",
-    "nmea" : "0.0.3",
+    "nmea": "0.0.3",
     "node-static": "0.7",
     "primus": "1.4",
     "ws": "0.4.30",
     "winston": "0.7"
   },
-  "engine": "0.10.16"
+  "engine": "0.10.16",
+  "devDependencies": {
+    "should": "~2.0.2",
+    "mocha": "1.13"
+  }
 }
