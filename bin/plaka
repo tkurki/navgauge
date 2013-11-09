@@ -1,0 +1,4 @@
+#!/bin/sh
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+$DIR/server.js --nmea file:$DIR/../samples/plaka.nmea.gz --boat plaka
