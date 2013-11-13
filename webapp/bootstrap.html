@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bootstrap 101 Template</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+<body>
+<table class="table table-striped table-bordered sorted_table">
+  <thead>
+  <tr>
+    <th>Src</th>
+    <th>PGN</th>
+    <th>Description</th>
+    <th>Data</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr class="placeholder"></tr>
+  </tbody>
+</table>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="lib/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+<script src="/primus/primus.js"></script>
+
+<script>
+  var primus = Primus.connect("http://" + window.location.host + "/",
+      {reconnect: {
+        maxDelay: 60000,
+        minDelay: 500,
+        retries: Infinity
+      }});
+
+  primus.on('data', function message(data) {
+    if (data.pgn != undefined) {
+      var element = $('#' + data.src + "_" + data.pgn);
+      if (!element.length) {
+        $('tbody').append(
+            $("<tr/>").append($("<td/>").text(data.src))
+                .append($("<td/>").text(data.pgn))
+                .append($("<td/>").text(data.description))
+                .append($("<td/>").attr("id", data.src + "_" + data.pgn).text(JSON.stringify(data.fields))));
+      } else {
+        element.text(JSON.stringify(data.fields));
+      }
+    } else {
+      var element = $('#' + data.type);
+      if (!element.length) {
+        $('tbody').append(
+            $("<tr/>").append($("<td/>").text('-'))
+                .append($("<td/>").text(data.type))
+                .append($("<td/>").text('-'))
+                .append($("<td/>").attr("id", data.type).text(JSON.stringify(data))));
+      } else {
+        element.text(JSON.stringify(data));
+      }
+
+    }
+  });
+</script>
+</body>
+</html>
