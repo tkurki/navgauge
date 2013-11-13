@@ -39,15 +39,16 @@
 
   primus.on('data', function message(data) {
     if (data.pgn != undefined) {
-      var element = $('#' + data.src + "_" + data.pgn);
+      var id = data.src + "_" + data.pgn;
+      var element = $('#' + id);
       if (!element.length) {
         $('tbody').append(
             $("<tr/>").append($("<td/>").text(data.src))
                 .append($("<td/>").text(data.pgn))
                 .append($("<td/>").text(data.description))
-                .append($("<td/>").attr("id", data.src + "_" + data.pgn).text(JSON.stringify(data.fields))));
+                .append($("<td/>").append($("<div/>").attr("id", id).html(toHtmlString(data.fields, id)))));
       } else {
-        element.text(JSON.stringify(data.fields));
+        element.html(toHtmlString(data.fields, id));
       }
     } else {
       var element = $('#' + data.type);
@@ -56,13 +57,31 @@
             $("<tr/>").append($("<td/>").text('-'))
                 .append($("<td/>").text(data.type))
                 .append($("<td/>").text('-'))
-                .append($("<td/>").attr("id", data.type).text(JSON.stringify(data))));
+                .append($("<td/>").append($("<div/>").attr("id", data.type).html(toHtmlString(data, data.type)))));
       } else {
-        element.text(JSON.stringify(data));
+        element.html(toHtmlString(data, data.type));
       }
 
     }
   });
+
+  var maxlinesPerMsg = new Object();
+
+  function toHtmlString(msg, uniqueId) {
+    var lines = [];
+    Object.getOwnPropertyNames(msg).forEach(function(propName){
+      lines.push(propName + ":" + msg[propName] + "<br/>");
+    });
+    if (maxlinesPerMsg[uniqueId] === undefined) {
+      maxlinesPerMsg[uniqueId] = lines.length;
+    } else {
+      while (maxlinesPerMsg[uniqueId] > lines.length) {
+        lines.push("<br/>");
+      }
+      maxlinesPerMsg[uniqueId] = lines.length;
+    }
+    return lines.join('');
+  }
 </script>
 </body>
 </html>
