@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html>
 <head>
   <title>Bootstrap 101 Template</title>
@@ -24,7 +24,7 @@
 </table>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="lib/jquery.min.js"></script>
+<script src="lib/jquery-1.10.2.min.js"></script>
 <!-- Include all compiled plugins (below), or include individual files as needed -->
 <script src="js/bootstrap.min.js"></script>
 <script src="/primus/primus.js"></script>
@@ -42,22 +42,14 @@
       var id = data.src + "_" + data.pgn;
       var element = $('#' + id);
       if (!element.length) {
-        $('tbody').append(
-            $("<tr/>").append($("<td/>").text(data.src))
-                .append($("<td/>").text(data.pgn))
-                .append($("<td/>").text(data.description))
-                .append($("<td/>").append($("<div/>").attr("id", id).html(toHtmlString(data.fields, id)))));
+        appendRow(id, [data.src, data.pgn, data.descriptor, data.fields]);
       } else {
         element.html(toHtmlString(data.fields, id));
       }
     } else {
       var element = $('#' + data.type);
       if (!element.length) {
-        $('tbody').append(
-            $("<tr/>").append($("<td/>").text('-'))
-                .append($("<td/>").text(data.type))
-                .append($("<td/>").text('-'))
-                .append($("<td/>").append($("<div/>").attr("id", data.type).html(toHtmlString(data, data.type)))));
+        appendRow(data.type, ["-", data.type, "-", data])
       } else {
         element.html(toHtmlString(data, data.type));
       }
@@ -65,12 +57,20 @@
     }
   });
 
+  function appendRow(id, data) {
+    $('tbody').append(
+        $("<tr/>").append($("<td/>").text(data[0]).attr("style", "width:10%"))
+            .append($("<td/>").text(data[1]).attr("style", "width:10%"))
+            .append($("<td/>").text(data[2]).attr("style", "width:20%"))
+            .append($("<td/>").append($("<div/>").attr("id", id).html(toHtmlString(data[3], id)))));
+  }
+
   var maxlinesPerMsg = new Object();
 
   function toHtmlString(msg, uniqueId) {
     var lines = [];
     Object.getOwnPropertyNames(msg).forEach(function(propName){
-      lines.push(propName + ":" + msg[propName] + "<br/>");
+      lines.push(propName + ":" + JSON.stringify(msg[propName]) + "<br/>");
     });
     if (maxlinesPerMsg[uniqueId] === undefined) {
       maxlinesPerMsg[uniqueId] = lines.length;
