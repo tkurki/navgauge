@@ -1,4 +1,4 @@
-var n2kMessages = {
+var messages = {
   POSITIONRAPIDUPDATE: 129025,
   '129025': {name: "Position, Rapid update",
     glyph: "pushpin"},
@@ -8,7 +8,10 @@ var n2kMessages = {
     glyph:"hand-down"},
 
   'SPEED': 128259,
-  '128259': {name:"Speed", glyph:"flash"},
+  '128259': {name:"Speed", glyph:"dashboard"},
+
+  '128275': {name:"Distance Log", glyph: "dashboard"},
+
 
   'VESSELHEADING': 127250,
   '127250': {name:"Vessel Heading",glyph:"arrow-right"},
@@ -37,20 +40,30 @@ var n2kMessages = {
 
   '129285': {name: "Navigation - Route/WP Information",glyph:"tag"},
 
+  '127237': {name: "Heading/Track control", glyph: "arrow-right"},
   '127245' : {name: "Rudder", glyph: "arrow-down"},
+  '127251': {name: "Rate of Turn", glyph: "refresh"},
+  '127257': {name: "Attitude", glyph: "refresh"},
+  '130577': {name: "Direction data", glyph:"cog"},
+  '127258': {name: "MAg", glyph:"cog"},
+  '129539' : {name:"GNSS DOPs", glyph:"list"},
+  '130310' : {name: "Environmental Parameters", glyph: "star"},
+  '130312' : {name: 'Temperature', glyph: "star"},
 
-  '129539' : {name:"GNSS DOPs", glyph:"list"}
+  '2waypoint': {name: "Bearing and Distance to Waypoint", glyph: "pushpin"},
+  'nav-info': {name: "Position and Course", glyph:"pushpin"},
+  'autopilot-b': {name: "Autopilot B", glyph:"pushpin"}
 };
 
 function getGlyph(msgType) {
-  return n2kMessages[msgType] != undefined ? n2kMessages[msgType].glyph : "question-sign";
+  return messages[msgType] != undefined ? messages[msgType].glyph : "question-sign";
 }
 
 function getName(msgType, theDefault) {
-  return n2kMessages[msgType] != undefined ? n2kMessages[msgType].name : theDefault ;
+  return messages[msgType] != undefined ? messages[msgType].name : theDefault ;
 }
 
 if (exports != undefined) {
-  exports.n2kMessages = n2kMessages;
+  exports.messages = messages;
 }
 
