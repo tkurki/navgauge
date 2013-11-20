@@ -32,7 +32,8 @@ npm install https://github.com/tkurki/navgauge/tarball/master
 navgauge/bin/cassiopeia
 ```
 
-3. Open [http://localhost:8080/](http://localhost:8080/)
+3. Open [http://localhost:8080/](http://localhost:8080/) to see a navigation display or
+[http://localhost:8080/busdata.html](http://localhost:8080/busdata.html) to see the raw data
 
 ## Getting started with real data
 
@@ -64,8 +65,8 @@ bin/server.js and takes the following options:
  ```
 
 
- Take a look at `cassiopeia` and `freya` under `lib/boats/`, roll your own and add .log() statements to the incoming
- streams in `lib/streams.js` to see what your data actually looks like.
+ Take a look at `cassiopeia`, `plaka` and `freya` under `lib/boats/`, roll your own and add .log() statements to the
+ incoming  streams in `lib/streams.js` to see what your data actually looks like.
 
 
 ## Why Navgauge?
