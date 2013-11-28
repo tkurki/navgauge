@@ -80,9 +80,8 @@ bin/server.js and takes the following options:
 4. B&G SailSteer looked like something I'd like, but I don't want to upgrade my plotter.
 
 5. I was disappointed with the gauge displays available on my Raymarine i70. You have the data, do what you want as opposed to being [limited](http://n2kpi.blogspot.fi/2013/08/the-starting-point.html) by the built-in display formats and functions in MFDs. Want a sparkline for certain data? Change the color scheme? [Make depth figure big & red](https://github.com/tkurki/navgauge/commit/d9c3be806f2b1ace49164ab8153052d313f43043) if it is less than 6 meters? A [simple list of
- all the data available on the bus](https://github.com/tkurki/navgauge/blob/master/webapp/busdata.html)? A new
- visualization for AWA history? Just
-do it...
+ all the data available on the bus](https://github.com/tkurki/navgauge/blob/master/webapp/busdata.html)? A
+ [colored polar plot of ground wind history](https://github.com/tkurki/navgauge/commit/a15d6b46c81c496b871c2f9199ee5faa3323d0bb) with smoothly fading trail?? Just do it...
 
 ## Ideas
 
