@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <title></title>
+</head>
+<script src="/primus/primus.js"></script>
+<script type="text/javascript" src="lib/Bacon.min.js"></script>
+<script type="text/javascript" src="d3.v3/d3.v3.js"></script>
+<script type="text/javascript" src="slidingTimeWindow.js"></script>
+
+<style>
+  .axis line,
+  .axis circle {
+    fill: none;
+    stroke: #777;
+    stroke-dasharray: 1, 4;
+  }
+
+  circle.perimeter {
+    fill:none;
+    stroke: #333;
+    stroke-dasharray: none;
+  }
+</style>
+
+<body>
+
+</body>
+<script>
+
+
+  var margin = {top: 20, right: 15, bottom: 60, left: 60}
+      , width = 960 - margin.left - margin.right
+      , height = 960 - margin.top - margin.bottom;
+
+  var chart = d3.select('body')
+      .append('svg:svg')
+      .attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom)
+      .attr('class', 'chart')
+
+  var g = chart.append('g')
+      .attr('transform', 'translate(' + (margin.left + width / 2) + ',' + (margin.top + height / 2) + ')')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('class', 'main');
+
+  g.append('circle').attr('r', Math.min(width/2, height/2)).attr('class','perimeter');
+
+  var ga = g.append("g")
+      .attr("class", "a axis")
+      .selectAll("g")
+      .data(d3.range(0, 360, 30))
+      .enter().append("g")
+      .attr("transform", function (d) {
+        return "rotate(" + -d + ")";
+      });
+
+  ga.append("line").attr("x2", Math.min(width, height) / 2);
+
+
+
+  var gr = g.append("g")
+      .attr("class", "r axis");
+
+  function drawGridCircles(r) {
+    var gridCircles = gr.selectAll("g").data(r.ticks(5), function(d){return d});
+
+    gridCircles.select("circle").attr("r", function(d) {return r(d)});
+    gridCircles.select("text")
+        .text(function(d) {return d})
+        .attr("x", function(d) { return r(d) + 4; })
+    gridCircles.exit().remove();
+
+    var gra = gridCircles.enter().append("g");
+
+    gra.append("circle").attr("r", function(d) {return r(d)});
+    gra.append("text")
+        .attr("x", function(d) { return r(d) + 4; })
+        .style("text-anchor", "middle")
+        .text(function(d) { console.log(d);return d; });
+  }
+
+  gCircle = g.append("g");
+  var primus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
+      {reconnect: {
+        maxDelay: 60000,
+        minDelay: 500,
+        retries: Infinity
+      }});
+
+  var messages = new Bacon.Bus();
+  primus.on('data', function message(data) {
+    messages.push(data);
+  });
+
+  var wind = messages.filter(function (msg) {
+    return msg.type === 'wind' && msg.reference === 'true boat'
+  });
+  var heading = messages.filter(function (msg) {
+    return msg.type === 'course'
+  }).map('.heading');
+  var windWithGroundwind = wind.combine(heading,function (windData, heading) {
+    return {
+      heading : Number(windData.heading),
+      groundWind : Number(heading) + Number(windData.angle),
+      speed: Number(windData.speed)
+    }
+  }).throttle(50);
+  var windWithHistory = windWithGroundwind.slidingTimeWindow(10 * 60 * 1000).onValue(function (h) {
+    draw(h)
+  });
+
+
+  function draw(history) {
+    if (history.length !== undefined) {
+      var windColor =
+          d3.scale.linear()
+              .domain([0, history.length * .2, history.length * .4, history.length * .6, history.length * .95,
+                history.length])
+              .range(['blue', 'green', 'yellow', 'orange', 'red']);
+      var maxSpeed = d3.max(history, function (d) {
+        return d.value.speed
+      });
+      var r = d3.scale.linear().domain([0, maxSpeed]).range([0, Math.min(height, width) / 2]).nice();
+      drawGridCircles(r);
+      var opacity = d3.scale.pow().exponent(1.7).domain([0.2, history.length]).range([0, 1]);
+      var circleData = gCircle.selectAll('circle').data(history, function (d) {
+        return d.timestamp
+      });
+      circleData.enter()
+          .append("circle")
+      circleData
+          .attr("fill-opacity", function (d, i) {
+            return opacity(i);
+          })
+          .attr("style", function (d, i) {
+            return "fill:" + windColor(i);
+          })
+          .attr('cx', function (d) {
+            return(r(d.value.speed * Math.cos((d.value.groundWind - 90) * Math.PI / 180)));
+          })
+          .attr('cy', function (d) {
+            return(r(d.value.speed * Math.sin((d.value.groundWind - 90) * Math.PI / 180)));
+          })
+          .attr("r", 3);
+      ;
+      circleData.exit().remove();
+      ;
+    }
+  }
+
+</script>
+</html>

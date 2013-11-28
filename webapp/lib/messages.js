@@ -63,7 +63,7 @@ function getName(msgType, theDefault) {
   return messages[msgType] != undefined ? messages[msgType].name : theDefault ;
 }
 
-if (exports != undefined) {
+if (typeof exports !== 'undefined') {
   exports.messages = messages;
 }
 
