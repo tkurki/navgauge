@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script type="text/javascript" src="lib/swipe.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .content {
+      position: absolute;
+      width: 100%;
+      overflow: auto;
+      margin: 0;
+      top: 0;
+      bottom:50px;
+    }
+
+    .swipe {
+      overflow: hidden;
+      visibility: visible;
+      position: relative;
+    }
+
+    .swipe-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .swipe-wrap > div {
+      float: left;
+      width: 100%;
+      min-height:100%;
+      position: relative;
+    }
+
+    footer {
+      background: #9ACD32;
+      height: 50px;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
+  </style>
+</head>
+<body>
+<section class="content">
+  <div id='slider' class='swipe'>
+    <div class='swipe-wrap'>
+      <div style="visibility: visible">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet"
+             style="width:100%; heigh:100%">
+          <g transform="translate(0,0)">
+            <circle r="500" class="perimeter"></circle>
+          </g>
+        </svg>
+      </div>
+      <div style="visibility: visible; background-color:greenyellow">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet"
+             style="width:100%; heigh:100%">
+          <g transform="translate(0,0)">
+            <circle r="500" class="perimeter"></circle>
+          </g>
+        </svg>
+      </div>
+      <div style="background-color: #dcdcdc">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -200 800 800" preserveAspectRatio="xMidYMid meet">
+          <circle r="200" class="face" fill="red"/>
+          <circle cx="-60" cy="-50" r="20" fill="#000"/>
+          <circle cx="60" cy="-50" r="20" fill="#000"/>
+        </svg>
+      </div>
+      <div style="background-color: gold">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-350 -250 700 500">
+          <circle r="200" class="face" fill="red"/>
+          <path fill="none" class="face" transform="translate(-396,-230)"
+                d="M487.41,282.411c-15.07,36.137-50.735,61.537-92.333,61.537         c-41.421,0-76.961-25.185-92.142-61.076"/>
+          <circle cx="-60" cy="-50" r="20" fill="#000"/>
+          <circle cx="60" cy="-50" r="20" fill="#000"/>
+        </svg>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</section>
+<footer>fooooo</footer>
+<script>
+
+  window.mySwipe = new Swipe(document.getElementById('slider'), {
+    startSlide: 0,
+    speed: 100,
+    auto:1000,
+    continuous: true,
+    disableScroll: false,
+    stopPropagation: false,
+    callback: function (index, elem) {
+    },
+    transitionEnd: function (index, elem) {
+    }});
+</script>
+</body>
+</html>
