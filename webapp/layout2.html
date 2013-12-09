@@ -3,6 +3,7 @@
 <head>
   <title></title>
   <script type="text/javascript" src="lib/swipe.js"></script>
+  <script type="text/javascript" src="lib/jquery-1.10.2.min.js"></script>
 
   <style>
     body {
@@ -52,6 +53,16 @@
       height: 100%;
       padding-bottom: 50px;
     }
+    .left {
+      float:left;
+      width:50%;
+      height:50px;
+    }
+    .right {
+      float:right;
+      width:50%;
+      height: 50px;
+    }
   </style>
 </head>
 <body>
@@ -93,19 +104,25 @@
   </div>
   </div>
 </section>
-<footer>footer is here</footer>
+<footer>
+  <div id="left" class="left"></div>
+  <div id="right" class="right"></div>
+</footer>
 <script>
+
   window.mySwipe = new Swipe(document.getElementById('slider'), {
     startSlide: 0,
-    speed: 100,
-    auto: 1000,
-    continuous: true,
+    speed: 500,
+      continuous: true,
     disableScroll: false,
     stopPropagation: false,
     callback: function (index, elem) {
     },
     transitionEnd: function (index, elem) {
     }});
+
+  $("#left").click(window.mySwipe.prev);
+  $("#right").click(window.mySwipe.next);
 </script>
 </body>
 </html>
