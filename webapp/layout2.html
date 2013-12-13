@@ -10,8 +10,12 @@
   <script src="/lib/messages.js"></script>
   <script type="text/javascript" src="src/busdata.js"></script>
   <script type="text/javascript" src="src/polar.js"></script>
+  <script type="text/javascript" src="src/map.js"></script>
   <script type="text/javascript" src="slidingTimeWindow.js"></script>
   <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
+  <script src="leaflet-0.6.4/leaflet.js"></script>
+  <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
+
 
 
 
@@ -95,14 +99,9 @@
 <section class="content">
   <div id='slider' class='swipe'>
     <div class='swipe-wrap'>
-      <div id="polar" style="background-color: #dcdcdc">
+      <div id="map">
       </div>
-      <div>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
-          <g transform="translate(0,0)">
-            <circle r="500" class="perimeter"></circle>
-          </g>
-        </svg>
+      <div id="polar" style="background-color: #dcdcdc">
       </div>
       <div style="background-color:greenyellow">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
@@ -167,6 +166,10 @@
   var polar = new Polar();
   polar.init("#polar");
   gaugeData.onValue(polar.onData.bind(polar));
+
+  var map = new Map();
+  map.init('map');
+  gaugeData.filter(function(msg){return msg.type = 'position'}).onValue(map.onData.bind(map));
 
 
 </script>
