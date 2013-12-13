@@ -7,8 +7,6 @@ function Busdata() {
 Busdata.prototype = {
   init: function (theSelector) {
     this.selector = theSelector;
-    console.log(this)
-    console.log(this.selector)
     var table = $(this.selector)
       .append(
         $('<table/>')

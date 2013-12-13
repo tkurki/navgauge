@@ -1,9 +1,19 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title></title>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="lib/Bacon.min.js"></script>
   <script type="text/javascript" src="lib/swipe.js"></script>
   <script type="text/javascript" src="lib/jquery-1.10.2.min.js"></script>
+  <script src="/primus/primus.js"></script>
+  <script src="/lib/messages.js"></script>
+  <script type="text/javascript" src="src/busdata.js"></script>
+  <script type="text/javascript" src="src/polar.js"></script>
+  <script type="text/javascript" src="slidingTimeWindow.js"></script>
+  <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
+
+
 
   <style>
     body {
@@ -38,6 +48,7 @@
       width: 100%;
       height: 100vh;
       position: relative;
+      overflow:scroll;
     }
 
     footer {
@@ -64,11 +75,28 @@
       height: 50px;
     }
   </style>
+
+  <style>
+    .axis line,
+    .axis circle {
+      fill: none;
+      stroke: #777;
+      stroke-dasharray: 1, 4;
+    }
+
+    circle.perimeter {
+      fill: none;
+      stroke: #333;
+      stroke-dasharray: none;
+    }
+  </style>
 </head>
 <body>
 <section class="content">
   <div id='slider' class='swipe'>
     <div class='swipe-wrap'>
+      <div id="polar" style="background-color: #dcdcdc">
+      </div>
       <div>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
           <g transform="translate(0,0)">
@@ -83,23 +111,9 @@
           </g>
         </svg>
       </div>
-      <div style="background-color: #dcdcdc">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-200 -200 800 800" preserveAspectRatio="xMidYMid meet">
-          <circle r="200" class="face" fill="red"/>
-          <circle cx="-60" cy="-50" r="20" fill="#000"/>
-          <circle cx="60" cy="-50" r="20" fill="#000"/>
-        </svg>
+      <div id="busdatacontainer" style="overflow: scroll; border:red solid 1px;margin:0;padding:0">
+      <div id="busdata" style="border:green solid 1px"/>
       </div>
-      <div style="background-color: gold">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-350 -250 700 500">
-          <circle r="200" class="face" fill="red"/>
-          <path fill="none" class="face" transform="translate(-396,-230)"
-                d="M487.41,282.411c-15.07,36.137-50.735,61.537-92.333,61.537         c-41.421,0-76.961-25.185-92.142-61.076"/>
-          <circle cx="-60" cy="-50" r="20" fill="#000"/>
-          <circle cx="60" cy="-50" r="20" fill="#000"/>
-        </svg>
-      </div>
-
     </div>
   </div>
   </div>
@@ -109,7 +123,6 @@
   <div id="right" class="right"></div>
 </footer>
 <script>
-
   window.mySwipe = new Swipe(document.getElementById('slider'), {
     startSlide: 0,
     speed: 500,
@@ -123,6 +136,39 @@
 
   $("#left").click(window.mySwipe.prev);
   $("#right").click(window.mySwipe.next);
+
+  var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
+      {reconnect: {
+        maxDelay: 60000,
+        minDelay: 500,
+        retries: Infinity
+      }});
+
+  var gaugeData = new Bacon.Bus();
+  gaugePrimus.on('data', function(data) {
+    gaugeData.push(data);
+  });
+
+  var busdataPrimus = Primus.connect("http://" + window.location.host + "/",
+      {reconnect: {
+        maxDelay: 60000,
+        minDelay: 500,
+        retries: Infinity
+      }});
+  var rawData = new Bacon.Bus();
+  busdataPrimus.on('data', function(data) {
+    rawData.push(data);
+  });
+
+  var busdata = new Busdata();
+  busdata.init("#busdata");
+  rawData.onValue(busdata.onData);
+
+  var polar = new Polar();
+  polar.init("#polar");
+  gaugeData.onValue(polar.onData.bind(polar));
+
+
 </script>
 </body>
 </html>
