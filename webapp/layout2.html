@@ -11,12 +11,11 @@
   <script type="text/javascript" src="src/busdata.js"></script>
   <script type="text/javascript" src="src/polar.js"></script>
   <script type="text/javascript" src="src/map.js"></script>
+  <script type="text/javascript" src="src/windgraph.js"></script>
   <script type="text/javascript" src="slidingTimeWindow.js"></script>
   <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
   <script src="leaflet-0.6.4/leaflet.js"></script>
   <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
-
-
 
 
   <style>
@@ -52,7 +51,7 @@
       width: 100%;
       height: 100vh;
       position: relative;
-      overflow:scroll;
+      overflow: scroll;
     }
 
     footer {
@@ -68,14 +67,16 @@
       height: 100%;
       padding-bottom: 50px;
     }
+
     .left {
-      float:left;
-      width:50%;
-      height:50px;
+      float: left;
+      width: 50%;
+      height: 50px;
     }
+
     .right {
-      float:right;
-      width:50%;
+      float: right;
+      width: 50%;
       height: 50px;
     }
   </style>
@@ -99,20 +100,15 @@
 <section class="content">
   <div id='slider' class='swipe'>
     <div class='swipe-wrap'>
-      <div id="map">
+      <div id="windgraph">
       </div>
       <div id="polar" style="background-color: #dcdcdc">
       </div>
-      <div style="background-color:greenyellow">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -500 1000 1000" preserveAspectRatio="xMidYMid meet">
-          <g transform="translate(0,0)">
-            <circle r="500" class="perimeter"></circle>
-          </g>
-        </svg>
+      <div id="busdatacontainer" style="overflow: scroll">
+        <div id="busdata"/>
       </div>
-      <div id="busdatacontainer" style="overflow: scroll; border:red solid 1px;margin:0;padding:0">
-      <div id="busdata" style="border:green solid 1px"/>
-      </div>
+    </div>
+    <div id="map">
     </div>
   </div>
   </div>
@@ -125,7 +121,7 @@
   window.mySwipe = new Swipe(document.getElementById('slider'), {
     startSlide: 0,
     speed: 500,
-      continuous: true,
+    continuous: true,
     disableScroll: false,
     stopPropagation: false,
     callback: function (index, elem) {
@@ -144,7 +140,7 @@
       }});
 
   var gaugeData = new Bacon.Bus();
-  gaugePrimus.on('data', function(data) {
+  gaugePrimus.on('data', function (data) {
     gaugeData.push(data);
   });
 
@@ -155,7 +151,7 @@
         retries: Infinity
       }});
   var rawData = new Bacon.Bus();
-  busdataPrimus.on('data', function(data) {
+  busdataPrimus.on('data', function (data) {
     rawData.push(data);
   });
 
@@ -167,9 +163,16 @@
   polar.init("#polar");
   gaugeData.onValue(polar.onData.bind(polar));
 
+  var windgraph = new Windgraph();
+  windgraph.init("#windgraph");
+  gaugeData.onValue(windgraph.onData.bind(windgraph));
+
+
   var map = new Map();
   map.init('map');
-  gaugeData.filter(function(msg){return msg.type = 'position'}).onValue(map.onData.bind(map));
+  gaugeData.filter(function (msg) {
+    return msg.type === 'position'
+  }).onValue(map.onData.bind(map));
 
 
 </script>
