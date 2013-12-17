@@ -118,19 +118,8 @@
   <div id="right" class="right"></div>
 </footer>
 <script>
-  window.mySwipe = new Swipe(document.getElementById('slider'), {
-    startSlide: 0,
-    speed: 500,
-    continuous: true,
-    disableScroll: false,
-    stopPropagation: false,
-    callback: function (index, elem) {
-    },
-    transitionEnd: function (index, elem) {
-    }});
+  var gaugePrimus;
 
-  $("#left").click(window.mySwipe.prev);
-  $("#right").click(window.mySwipe.next);
 
   var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
       {reconnect: {
@@ -144,20 +133,31 @@
     gaugeData.push(data);
   });
 
-  var busdataPrimus = Primus.connect("http://" + window.location.host + "/",
-      {reconnect: {
-        maxDelay: 60000,
-        minDelay: 500,
-        retries: Infinity
-      }});
-  var rawData = new Bacon.Bus();
-  busdataPrimus.on('data', function (data) {
-    rawData.push(data);
-  });
+  var busdataPrimus = undefined;
 
+  var rawData = new Bacon.Bus();
   var busdata = new Busdata();
   busdata.init("#busdata");
   rawData.onValue(busdata.onData);
+
+  function updateConnectionsOnSwipeDivId(elementId) {
+    if (elementId === 'busdatacontainer') {
+      busdataPrimus = Primus.connect("http://" + window.location.host + "/",
+          {reconnect: {
+            maxDelay: 60000,
+            minDelay: 500,
+            retries: Infinity
+          }});
+      busdataPrimus.on('data', function (data) {
+        rawData.push(data);
+      });
+    } else {
+      if (typeof busdataPrimus !== 'undefined') {
+        busdataPrimus.end();
+        busdataPrimus = undefined;
+      }
+    }
+  }
 
   var polar = new Polar();
   polar.init("#polar");
@@ -173,6 +173,21 @@
   gaugeData.filter(function (msg) {
     return msg.type === 'position'
   }).onValue(map.onData.bind(map));
+
+  window.mySwipe = new Swipe(document.getElementById('slider'), {
+    startSlide: 0,
+    speed: 500,
+    continuous: true,
+    disableScroll: false,
+    stopPropagation: false,
+    callback: function (index, elem) {
+      updateConnectionsOnSwipeDivId(elem.getAttribute('id'));
+    },
+    transitionEnd: function (index, elem) {
+    }});
+
+  $("#left").click(window.mySwipe.prev);
+  $("#right").click(window.mySwipe.next);
 
 
 </script>
