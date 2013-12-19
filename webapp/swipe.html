@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <link href="css/swipelayout.css" rel="stylesheet">
   <link href="css/bootstrap.min.css" rel="stylesheet">
   <script type="text/javascript" src="lib/Bacon.min.js"></script>
   <script type="text/javascript" src="lib/swipe.js"></script>
@@ -17,71 +18,8 @@
   <script src="leaflet-0.6.4/leaflet.js"></script>
   <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
 
-
   <style>
-    body {
-      margin: 0;
-    }
-
-    * {
-      box-sizing: border-box
-    }
-
-    .content {
-      position: absolute;
-      width: 100%;
-      overflow: auto;
-      margin: 0;
-      top: 0;
-    }
-
-    .swipe {
-      overflow: hidden;
-      visibility: visible;
-      position: relative;
-    }
-
-    .swipe-wrap {
-      overflow: hidden;
-      position: relative;
-    }
-
-    .swipe-wrap > div {
-      float: left;
-      width: 100%;
-      height: 100vh;
-      position: relative;
-      overflow: scroll;
-    }
-
-    footer {
-      background: rgba(200, 100, 50, 0.2);
-      height: 50px;
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-    }
-
-    svg {
-      width: 100%;
-      height: 100%;
-      padding-bottom: 50px;
-    }
-
-    .left {
-      float: left;
-      width: 50%;
-      height: 50px;
-    }
-
-    .right {
-      float: right;
-      width: 50%;
-      height: 50px;
-    }
-  </style>
-
-  <style>
+    /* polar graphs*/
     .axis line,
     .axis circle {
       fill: none;
