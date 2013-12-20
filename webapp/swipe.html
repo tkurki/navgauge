@@ -13,6 +13,7 @@
   <script type="text/javascript" src="src/polar.js"></script>
   <script type="text/javascript" src="src/map.js"></script>
   <script type="text/javascript" src="src/windgraph.js"></script>
+  <script type="text/javascript" src="src/sailgauge.js"></script>
   <script type="text/javascript" src="slidingTimeWindow.js"></script>
   <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
   <script src="leaflet-0.6.4/leaflet.js"></script>
@@ -38,6 +39,8 @@
 <section class="content">
   <div id='slider' class='swipe'>
     <div class='swipe-wrap'>
+      <div id="sailgauge">
+      </div>
       <div id="windgraph">
       </div>
       <div id="polar" style="background-color: #dcdcdc">
@@ -107,10 +110,13 @@
 
 
   var map = new Map();
-  map.init('map');
+/*  map.init('map');
   gaugeData.filter(function (msg) {
     return msg.type === 'position'
-  }).onValue(map.onData.bind(map));
+  }).onValue(map.onData.bind(map));*/
+
+  var sailgauge = new SailGauge();
+  sailgauge.init('#sailgauge', 800);
 
   window.mySwipe = new Swipe(document.getElementById('slider'), {
     startSlide: 0,

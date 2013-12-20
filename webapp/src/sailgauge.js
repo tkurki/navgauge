@@ -11,7 +11,7 @@ SailGauge.prototype = {
       .attr('class', 'chart');
     var defs = chart.append('defs');
     var gradient = defs.append('linearGradient')
-      .attr('id', 'Gradient2')
+      .attr('id', 'rosegradient')
       .attr('x1','0')
       .attr('x2', '0')
       .attr('y1','0')
@@ -25,35 +25,19 @@ SailGauge.prototype = {
     rose.append('path')
       .attr('d', "M 700 400 A 300 300 0 1 1  100,400 A 300 300 0 1 1  700 400 z")
       .attr('class', 'p-1')
-      .attr('fill', 'url(#Gradient2)')
+      .attr('fill', 'url(#rosegradient)')
       .attr('opacity', '0.8')
-      .attr('stroke-width', '2px')
+      .attr('stroke-width', '2px');
+    rose.append('g').attr('id', 'tickmarksTop');
 
-    /*
-     <g id="rose" class="rose">
-     <g id="edge" class="p1">
-     <g id="tickmarks"/>
-     <circle cx="400" cy="400" r="320" fill="none" stroke-width="2px"/>
-     <path d="M 700 400 A 300 300 0 1 1  100,400 A 300 300 0 1 1  700 400 z"
-     class="p-1" fill="url(#Gradient2)" opacity="0.8"
-     id="kreis" stroke-width="2px"/>
-     <g id="tickmarksTop"/>
-     </g>
-
-     <g id="mark" transform="rotate(0 400 400)">
-     <path d="M 385,60 L 415,60 400,90 z" class="mark"/>
-     <circle cx="400" cy="70" r="14" stroke="none" fill="white"/>
-     <text id="marktext" x="400" y="70" class="marktext" text-anchor="middle" dominant-baseline="middle"
-     transform="rotate(0 400 70)">000
-     </text>
-     <circle cx="400" cy="118" r="18" stroke="red" fill="white"/>
-     <text id="markdistance" x="400" y="118" class="marktext" text-anchor="middle"
-     dominant-baseline="middle"
-     transform="rotate(0 400 114)">0.0
-     </text>
-     </g>
-     </g>
-     */
+    var mark = rose.append('g').attr('id', 'mark');
+    mark.append('path').attr('d',"M 385,60 L 415,60 400,90 z").attr('class', 'mark');
+    mark.append('circle').attr('cx','400').attr('cy','70').attr('r', '11').attr('stroke','none').attr('fill','white');
+    mark.append('text').attr('x','400').attr('y','70').attr('class', 'marktext')
+      .attr('text-anchor','middle').attr('dominant-baseline','middle').text('000');
+    mark.append('circle').attr('cx','400').attr('cy','118').attr('r', '18').attr('stroke','none').attr('fill','white');
+    mark.append('text').attr('x','400').attr('y','118').attr('class', 'marktext')
+      .attr('text-anchor','middle').attr('dominant-baseline','middle').text('0.0');
   }
   ,
   arcForAngle: function (angle) {
