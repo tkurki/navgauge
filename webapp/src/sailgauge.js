@@ -41,6 +41,16 @@ SailGauge.prototype = {
       .attr('text-anchor','middle').attr('dominant-baseline','middle').text('0.0');
 
     this.drawTicks();
+
+    chart.append('rect')
+      .attr('x','370').attr('y','70')
+      .attr('rx','5').attr('ry','5')
+      .attr('width','60').attr('height','40')
+      .attr('class','rose');
+    chart.append('text')
+      .attr('id','tracktruetext')
+      .attr('x','400').attr('y','90')
+      .attr('text-anchor','middle').attr('dominant-baseline','middle').attr('font-size','25').text('000');
   }
   ,
 
