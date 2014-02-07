@@ -1,5 +1,4 @@
 function SailGauge() {
-
 }
 
 SailGauge.prototype = {
@@ -20,7 +19,6 @@ SailGauge.prototype = {
     gradient.append('stop').attr('offset','100%').attr('stop-color','#ff4f00');
     var rose = chart.append('g').attr('id','rose').attr('class','rose');
     rose.append('g').attr('id','edge').attr('class','p1');
-    rose.append('g').attr('id','tickmarks');
     rose.append('circle').attr('cx', size / 2).attr('cy',size / 2).attr('r', size / 2 - 80).attr('fill', 'gray').attr('stroke-width','2px');
     rose.append('path')
       .attr('d', "M 700 400 A 300 300 0 1 1  100,400 A 300 300 0 1 1  700 400 z")
@@ -28,18 +26,24 @@ SailGauge.prototype = {
       .attr('fill', 'url(#rosegradient)')
       .attr('opacity', '0.8')
       .attr('stroke-width', '2px');
+    rose.append('g').attr('id','tickmarks');
     rose.append('g').attr('id', 'tickmarksTop');
 
     var mark = rose.append('g').attr('id', 'mark');
     mark.append('path').attr('d',"M 385,60 L 415,60 400,90 z").attr('class', 'mark');
     mark.append('circle').attr('cx','400').attr('cy','70').attr('r', '11').attr('stroke','none').attr('fill','white');
-    mark.append('text').attr('x','400').attr('y','70').attr('class', 'marktext')
+    mark.append('text')
+      .attr('x','400').attr('y','70')
+      .attr('class', 'marktext')
       .attr('text-anchor','middle').attr('dominant-baseline','middle').text('000');
     mark.append('circle').attr('cx','400').attr('cy','118').attr('r', '18').attr('stroke','none').attr('fill','white');
     mark.append('text').attr('x','400').attr('y','118').attr('class', 'marktext')
       .attr('text-anchor','middle').attr('dominant-baseline','middle').text('0.0');
+
+    this.drawTicks();
   }
   ,
+
   arcForAngle: function (angle) {
     return 'M400,400 v-300 a300,300 1 0,1 ' +
       Math.sin(angle * Math.PI / 180) * 300 + ',' +
@@ -56,7 +60,6 @@ SailGauge.prototype = {
   }
   ,
   drawTicks: function () {
-    //var edge = d3.select("#edge");
     var tickmarks = d3.select("#tickmarks");
     var tickmarksTop = d3.select("#tickmarksTop");
     for (var i = 10; i < 360; i += 10) {
