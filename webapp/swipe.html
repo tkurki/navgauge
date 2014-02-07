@@ -18,6 +18,7 @@
   <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
   <script src="leaflet-0.6.4/leaflet.js"></script>
   <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
+  <link rel="stylesheet" href="styles/colors.css"/>
 
   <style>
     /* polar graphs*/
@@ -34,9 +35,13 @@
       stroke-dasharray: none;
     }
   </style>
+
+  <style>
+
+  </style>
 </head>
 <body>
-<section class="content">
+<section class="content s1">
   <div id='slider' class='swipe'>
     <div class='swipe-wrap'>
       <div id="sailgauge">
@@ -110,13 +115,15 @@
 
 
   var map = new Map();
-/*  map.init('map');
+  map.init('map');
   gaugeData.filter(function (msg) {
     return msg.type === 'position'
-  }).onValue(map.onData.bind(map));*/
+  }).onValue(map.onData.bind(map));
 
   var sailgauge = new SailGauge();
   sailgauge.init('#sailgauge', 800);
+  gaugeData.onValue(sailgauge.onData.bind(sailgauge));
+
 
   window.mySwipe = new Swipe(document.getElementById('slider'), {
     startSlide: 0,
