@@ -2,12 +2,12 @@ function SailGauge() {
 }
 
 SailGauge.prototype = {
-  depthStream : new Bacon.Bus(),
+  depthStream: new Bacon.Bus(),
   init: function (selector, size) {
-    this.drawSvg(selector,size);
+    this.drawSvg(selector, size);
     this.initStreams();
   },
-  drawSvg: function(selector,size) {
+  drawSvg: function (selector, size) {
     var chart = d3.select(selector)
       .append('svg:svg')
       .attr('viewBox', "0 0 " + size + " " + size)
@@ -58,11 +58,11 @@ SailGauge.prototype = {
       .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('font-size', '25').text('000');
 
     chart.append('text')
-      .attr('x','800').attr('y','60')
-      .attr('text-anchor','end').attr('dominant-baseline','text-after-edge')
-      .attr('class','positivegaugetext')
+      .attr('x', '800').attr('y', '60')
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'text-after-edge')
+      .attr('class', 'positivegaugetext')
       .append('tspan')
-      .attr('id','depth').attr('dy','0px').attr('font-size','60').text('99.9');
+      .attr('id', 'depth').attr('dy', '0px').attr('font-size', '60').text('99.9');
   },
 
   arcForAngle: function (angle) {
@@ -136,7 +136,17 @@ SailGauge.prototype = {
       case 'depth':
         this.depthStream.push(msg);
         break;
+      case 'course':
+        this.updateCourse(msg);
+        break;
     }
+  },
+  updateCourse: function(msg) {
+    var trackTrue = msg.heading;
+    d3.select('#tracktruetext').text(trackTrue.toFixed(0) + '°');
+//    rotateAnimated('#rose', -1 * data.heading, 400, 400, 200);
+//    d3.select('#marktext').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 70)");
+//    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 118)");
   },
   lastDepthReceiveTime: 0,
   updateDepthDisplay: function (msg) {
@@ -165,9 +175,8 @@ SailGauge.prototype = {
       return maxFontSize;
     }
     return minFontSize + (shallowThreshold - depth) / (shallowThreshold - minThreshold) * (maxFontSize - minFontSize);
-  }
-  ,
-  initStreams: function() {
+  },
+  initStreams: function () {
     this.depthStream.onValue(this.updateDepthDisplay.bind(this));
     this.depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
 //      drawSparkline("#depthSpark", data, 100, 50);
