@@ -141,12 +141,14 @@ SailGauge.prototype = {
         break;
     }
   },
+  trackTrue:0,
+  bearingToMark:45,
   updateCourse: function(msg) {
-    var trackTrue = msg.heading;
-    d3.select('#tracktruetext').text(trackTrue.toFixed(0) + '°');
-//    rotateAnimated('#rose', -1 * data.heading, 400, 400, 200);
-//    d3.select('#marktext').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 70)");
-//    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * bearingToMark + trackTrue) + " 400 118)");
+    this.trackTrue = msg.heading;
+    d3.select('#tracktruetext').text(this.trackTrue.toFixed(0) + '°');
+    this.rotateAnimated('#rose', -1 * this.trackTrue, 400, 400, 200);
+    d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 70)");
+    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
   },
   lastDepthReceiveTime: 0,
   updateDepthDisplay: function (msg) {
