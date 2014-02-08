@@ -3,7 +3,7 @@ function SailGauge() {
 
 SailGauge.prototype = {
   depthStream: new Bacon.Bus(),
-  trueWindAngleStream:new Bacon.Bus(),
+  trueWindAngleStream: new Bacon.Bus(),
 
   init: function (selector, size) {
     this.drawSvg(selector, size);
@@ -91,7 +91,14 @@ SailGauge.prototype = {
       .attr('class', 'positivegaugetext')
       .append('tspan')
       .attr('id', 'depth').attr('dy', '0px').attr('font-size', '60').text('99.9');
-  }, drawSvg: function (selector, size) {
+  },
+  drawSpeedLabel: function (chart) {
+    chart.append("text")
+      .attr("id", "speed").attr("x", "400").attr("y", "400")
+      .attr("text-anchor", "middle").attr("dominant-baseline", "middle")
+      .attr("font-size", "60").text("-");
+  },
+  drawSvg: function (selector, size) {
     var chart = this.drawBackground(chart, selector, size);
     var rose = this.drawCompassRose(chart, size);
     this.drawMark(rose);
@@ -100,8 +107,8 @@ SailGauge.prototype = {
     this.drawDepthLabel(chart);
     this.drawWindMarkers(chart);
     this.drawBoat(chart);
+    this.drawSpeedLabel(chart);
   },
-
   arcForAngle: function (angle) {
     return 'M400,400 v-300 a300,300 1 0,1 ' +
       Math.sin(angle * Math.PI / 180) * 300 + ',' +
@@ -168,6 +175,20 @@ SailGauge.prototype = {
       dirs = dirs.splice(1);
     }
   },
+  updateWind: function (msg) {
+    switch (msg.reference) {
+      case 'apparent':
+        this.rotateAnimated('#apparentwindmarker', msg.angle, 400, 400, 20);
+        d3.select("#apparentwindmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 60)");
+        d3.select("#apparentwindmarkertext").text(Number(msg.speed).toFixed(1));
+        break;
+      case 'true boat':
+        this.rotateAnimated('#windmarker', msg.angle, 400, 400, 20);
+        d3.select("#windmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 140)");
+        d3.select("#windmarkertext").text(Number(msg.speed).toFixed(1));
+        this.trueWindAngleStream.push(Number(msg.angle));
+    }
+  },
   onData: function onMessage(msg) {
     switch (msg.type) {
       case 'depth':
@@ -180,18 +201,10 @@ SailGauge.prototype = {
         d3.select('#speed').text(msg.knots.toFixed(1));
         break;
       case 'wind':
-        switch (msg.reference) {
-          case 'apparent':
-            this.rotateAnimated('#apparentwindmarker', msg.angle, 400, 400, 20);
-            d3.select("#apparentwindmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 60)");
-            d3.select("#apparentwindmarkertext").text(Number(msg.speed).toFixed(1));
-            break;
-          case 'true boat':
-            this.rotateAnimated('#windmarker', msg.angle, 400, 400, 20);
-            d3.select("#windmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 140)");
-            d3.select("#windmarkertext").text(Number(msg.speed).toFixed(1));
-            this.trueWindAngleStream.push(Number(msg.angle));
-        }
+        this.updateWind(msg);
+        break;
+      case 'speed':
+        d3.select('#speed').text(msg.knots.toFixed(1));
         break;
     }
   },
@@ -260,7 +273,7 @@ SailGauge.prototype = {
     boat.append('path')
       .attr('style', 'stroke:#00ff00;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1')
       .attr('d', 'm 0,100 c 150,-100 200,-35 200,-35 0,35 0,35 0,35')
-      .attr('class', 'boat');
+      .attr('class', 'boat sp');
     boat.append('path')
       .attr('style', 'stroke:#dd0000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1')
       .attr('d', 'm 200,100 c 0,35 0,35 0,35  0,0 -70,65 -200,-35')
