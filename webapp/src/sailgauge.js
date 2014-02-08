@@ -84,13 +84,16 @@ SailGauge.prototype = {
     gradient.append('stop').attr('offset', '0%').attr('stop-color', '#0c5da5');
     gradient.append('stop').attr('offset', '100%').attr('stop-color', '#ff4f00');
     return chart;
-  }, drawDepthLabel: function (chart) {
+  },
+  drawDepthIndicator: function (chart) {
     chart.append('text')
       .attr('x', '800').attr('y', '60')
       .attr('text-anchor', 'end').attr('dominant-baseline', 'text-after-edge')
       .attr('class', 'positivegaugetext')
       .append('tspan')
       .attr('id', 'depth').attr('dy', '0px').attr('font-size', '60').text('99.9');
+    chart.append("g").attr("transform","translate(700 80)")
+      .append("path").attr("id","depthSpark").attr("class","sparkline").attr("d","M 5,5 l 10,10 -10,0 z");
   },
   drawSpeedLabel: function (chart) {
     chart.append("text")
@@ -104,7 +107,7 @@ SailGauge.prototype = {
     this.drawMark(rose);
     this.drawTicks();
     this.drawTrackLabel(chart);
-    this.drawDepthLabel(chart);
+    this.drawDepthIndicator(chart);
     this.drawWindMarkers(chart);
     this.drawBoat(chart);
     this.drawSpeedLabel(chart);
@@ -228,7 +231,6 @@ SailGauge.prototype = {
       depthText.attr('dy', (fontSize * 0.7 ) - 60);
       depthText.attr('fill', depth < 6 ? 'red' : null);
       depthText.attr('font-weight', depth < 6 ? 'bold' : null);
-      this.depthStream.push(Number(depth));
       this.lastDepthReceiveTime = Date.now();
     }
   },
@@ -245,10 +247,26 @@ SailGauge.prototype = {
     }
     return minFontSize + (shallowThreshold - depth) / (shallowThreshold - minThreshold) * (maxFontSize - minFontSize);
   },
+  drawSparkline: function (selector, data, propertyName, width, height) {
+    var now = Date.now();
+    var x = d3.scale.linear().domain([
+      d3.min(data, function (d) { return d.timestamp - now;}),
+      d3.max(data, function (d) {return d.timestamp - now;})])
+      .range([0, width]);
+    var y = d3.scale.linear().domain([
+      d3.min(data, function (d) {return d.value[propertyName];}),
+      d3.max(data, function (d) {return d.value[propertyName]})])
+      .range([0, height]);
+    var line = d3.svg.line()
+      .x(function (d) {return x(d.timestamp - now);})
+      .y(function (d) {return y(d.value[propertyName]);});
+    d3.select(selector).attr("d", line(data));
+  },
   initStreams: function () {
     this.depthStream.onValue(this.updateDepthDisplay.bind(this));
+    var doDrawSparkLine = this.drawSparkline.bind(this);
     this.depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
-//      drawSparkline("#depthSpark", data, 100, 50);
+      doDrawSparkLine("#depthSpark", data, "depth", 100, 50);
     });
     this.trueWindAngleStream.slidingTimeWindow(30 * 1000).onValue(function (data) {
       var twa_max = 0;
