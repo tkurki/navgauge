@@ -9,64 +9,7 @@ SailGauge.prototype = {
     this.drawSvg(selector, size);
     this.initStreams();
   },
-  drawSvg: function (selector, size) {
-    var chart = d3.select(selector)
-      .append('svg:svg')
-      .attr('viewBox', "0 0 " + size + " " + size)
-      .attr('preserveAspectRatio', "xMidYMid meet")
-      .attr('class', 'chart');
-    var defs = chart.append('defs');
-    var gradient = defs.append('linearGradient')
-      .attr('id', 'rosegradient')
-      .attr('x1', '0')
-      .attr('x2', '0')
-      .attr('y1', '0')
-      .attr('y2', '1')
-    gradient.append('stop').attr('offset', '0%').attr('stop-color', '#0c5da5');
-    gradient.append('stop').attr('offset', '100%').attr('stop-color', '#ff4f00');
-    var rose = chart.append('g').attr('id', 'rose').attr('class', 'rose');
-    rose.append('g').attr('id', 'edge').attr('class', 'p1');
-    rose.append('circle').attr('cx', size / 2).attr('cy', size / 2).attr('r', size / 2 - 80).attr('fill', 'gray').attr('stroke-width', '2px');
-    rose.append('path')
-      .attr('d', "M 700 400 A 300 300 0 1 1  100,400 A 300 300 0 1 1  700 400 z")
-      .attr('class', 'p-1')
-      .attr('fill', 'url(#rosegradient)')
-      .attr('opacity', '0.8')
-      .attr('stroke-width', '2px');
-    rose.append('g').attr('id', 'tickmarks');
-    rose.append('g').attr('id', 'tickmarksTop');
-
-    var mark = rose.append('g').attr('id', 'mark');
-    mark.append('path').attr('d', "M 385,60 L 415,60 400,90 z").attr('class', 'mark');
-    mark.append('circle').attr('cx', '400').attr('cy', '70').attr('r', '11').attr('stroke', 'none').attr('fill', 'white');
-    mark.append('text')
-      .attr('x', '400').attr('y', '70')
-      .attr('class', 'marktext')
-      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').text('000');
-    mark.append('circle').attr('cx', '400').attr('cy', '118').attr('r', '18').attr('stroke', 'none').attr('fill', 'white');
-    mark.append('text').attr('x', '400').attr('y', '118').attr('class', 'marktext')
-      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').text('0.0');
-
-    this.drawTicks();
-
-    chart.append('rect')
-      .attr('x', '370').attr('y', '70')
-      .attr('rx', '5').attr('ry', '5')
-      .attr('width', '60').attr('height', '40')
-      .attr('class', 'rose');
-    chart.append('text')
-      .attr('id', 'tracktruetext')
-      .attr('x', '400').attr('y', '90')
-      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').attr('font-size', '25').text('000');
-
-    chart.append('text')
-      .attr('x', '800').attr('y', '60')
-      .attr('text-anchor', 'end').attr('dominant-baseline', 'text-after-edge')
-      .attr('class', 'positivegaugetext')
-      .append('tspan')
-      .attr('id', 'depth').attr('dy', '0px').attr('font-size', '60').text('99.9');
-
-
+  drawWindMarkers: function (chart) {
     var windmarker = chart.append("g")
       .attr("id", "windmarker")
       .attr("class", "truewind");
@@ -87,7 +30,75 @@ SailGauge.prototype = {
     apparentwindmarker.append("text").attr("id", "apparentwindmarkertext").attr("x", "400").attr("y", "60")
       .attr("text-anchor", "middle").attr("dominant-baseline", "middle")
       .attr("class", "text").text("0");
-
+  }, drawTrackLabel: function (chart) {
+    chart.append('rect')
+      .attr('x', '370').attr('y', '70')
+      .attr('rx', '5').attr('ry', '5')
+      .attr('width', '60').attr('height', '40')
+      .attr('class', 'rose');
+    chart.append('text')
+      .attr('id', 'tracktruetext')
+      .attr('x', '400').attr('y', '90')
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+      .attr('font-size', '25').text('000');
+  },
+  drawCompassRose: function (chart, size) {
+    var rose = chart.append('g').attr('id', 'rose').attr('class', 'rose');
+    rose.append('g').attr('id', 'edge').attr('class', 'p1');
+    rose.append('circle').attr('cx', size / 2).attr('cy', size / 2).attr('r', size / 2 - 80).attr('fill', 'gray').attr('stroke-width', '2px');
+    rose.append('path')
+      .attr('d', "M 700 400 A 300 300 0 1 1  100,400 A 300 300 0 1 1  700 400 z")
+      .attr('class', 'p-1')
+      .attr('fill', 'url(#rosegradient)')
+      .attr('opacity', '0.8')
+      .attr('stroke-width', '2px');
+    rose.append('g').attr('id', 'tickmarks');
+    rose.append('g').attr('id', 'tickmarksTop');
+    return rose;
+  },
+  drawMark: function (rose) {
+    var mark = rose.append('g').attr('id', 'mark');
+    mark.append('path').attr('d', "M 385,60 L 415,60 400,90 z").attr('class', 'mark');
+    mark.append('circle').attr('cx', '400').attr('cy', '70').attr('r', '11').attr('stroke', 'none').attr('fill', 'white');
+    mark.append('text')
+      .attr('x', '400').attr('y', '70')
+      .attr('class', 'marktext')
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').text('000');
+    mark.append('circle').attr('cx', '400').attr('cy', '118').attr('r', '18').attr('stroke', 'none').attr('fill', 'white');
+    mark.append('text').attr('x', '400').attr('y', '118').attr('class', 'marktext')
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').text('0.0');
+  },
+  drawBackground: function (chart, selector, size) {
+    chart = d3.select(selector)
+      .append('svg:svg')
+      .attr('viewBox', "0 0 " + size + " " + size)
+      .attr('preserveAspectRatio', "xMidYMid meet")
+      .attr('class', 'chart');
+    var defs = chart.append('defs');
+    var gradient = defs.append('linearGradient')
+      .attr('id', 'rosegradient')
+      .attr('x1', '0')
+      .attr('x2', '0')
+      .attr('y1', '0')
+      .attr('y2', '1')
+    gradient.append('stop').attr('offset', '0%').attr('stop-color', '#0c5da5');
+    gradient.append('stop').attr('offset', '100%').attr('stop-color', '#ff4f00');
+    return chart;
+  }, drawDepthLabel: function (chart) {
+    chart.append('text')
+      .attr('x', '800').attr('y', '60')
+      .attr('text-anchor', 'end').attr('dominant-baseline', 'text-after-edge')
+      .attr('class', 'positivegaugetext')
+      .append('tspan')
+      .attr('id', 'depth').attr('dy', '0px').attr('font-size', '60').text('99.9');
+  }, drawSvg: function (selector, size) {
+    var chart = this.drawBackground(chart, selector, size);
+    var rose = this.drawCompassRose(chart, size);
+    this.drawMark(rose);
+    this.drawTicks();
+    this.drawTrackLabel(chart);
+    this.drawDepthLabel(chart);
+    this.drawWindMarkers(chart);
     this.drawBoat(chart);
   },
 
