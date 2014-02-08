@@ -4,10 +4,22 @@ function SailGauge() {
 SailGauge.prototype = {
   depthStream: new Bacon.Bus(),
   trueWindAngleStream: new Bacon.Bus(),
-
+  lastAutopilotReceiveTime : 0,
   init: function (selector, size) {
     this.drawSvg(selector, size);
     this.initStreams();
+    this.startPeriodicTask();
+  },
+  startPeriodicTask: function () {
+    var that = this;
+    setInterval(function hideInactiveElements() {
+      if (Date.now() - that.lastAutopilotReceiveTime > 60 * 1000) {
+        d3.select("#mark").attr("display", "none");
+      }
+      if (Date.now() - that.lastDepthReceiveTime > 5 * 1000) {
+        d3.select("#depth").attr("display", "none");
+      }
+    }, 5000);
   },
   drawWindMarkers: function (chart) {
     var windmarker = chart.append("g")
@@ -107,10 +119,10 @@ SailGauge.prototype = {
     this.drawMark(rose);
     this.drawTicks();
     this.drawTrackLabel(chart);
-    this.drawDepthIndicator(chart);
     this.drawWindMarkers(chart);
     this.drawBoat(chart);
     this.drawSpeedLabel(chart);
+    this.drawDepthIndicator(chart);
   },
   arcForAngle: function (angle) {
     return 'M400,400 v-300 a300,300 1 0,1 ' +
@@ -192,6 +204,16 @@ SailGauge.prototype = {
         this.trueWindAngleStream.push(Number(msg.angle));
     }
   },
+  updateMark: function (msg) {
+    d3.select('#markdistance').text(Number(msg.distance).toFixed(1));
+    this.bearingToMark = msg.bearing;
+    this.rotateAnimated('#mark', this.bearingToMark, 400, 400, 200);
+    d3.select("#mark").attr("display", "inline");
+    d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 70)");
+    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
+    d3.select('#marktext').text(msg.bearing.toFixed(0));
+    this.lastAutopilotReceiveTime = Date.now();
+  },
   onData: function onMessage(msg) {
     switch (msg.type) {
       case 'depth':
@@ -209,6 +231,10 @@ SailGauge.prototype = {
       case 'speed':
         d3.select('#speed').text(msg.knots.toFixed(1));
         break;
+      case '2waypoint':
+        this.updateMark(msg);
+        break;
+
     }
   },
   trackTrue: 0,
@@ -254,7 +280,7 @@ SailGauge.prototype = {
       d3.max(data, function (d) {return d.timestamp - now;})])
       .range([0, width]);
     var y = d3.scale.linear().domain([
-      d3.min(data, function (d) {return d.value[propertyName];}),
+      d3.min(data, function (d) {return d.value[propertyName]}),
       d3.max(data, function (d) {return d.value[propertyName]})])
       .range([0, height]);
     var line = d3.svg.line()
@@ -297,5 +323,4 @@ SailGauge.prototype = {
       .attr('d', 'm 200,100 c 0,35 0,35 0,35  0,0 -70,65 -200,-35')
       .attr('class', 'boat');
   }
-
 }
