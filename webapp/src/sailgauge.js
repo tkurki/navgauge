@@ -3,6 +3,8 @@ function SailGauge() {
 
 SailGauge.prototype = {
   depthStream: new Bacon.Bus(),
+  trueWindAngleStream:new Bacon.Bus(),
+
   init: function (selector, size) {
     this.drawSvg(selector, size);
     this.initStreams();
@@ -63,6 +65,30 @@ SailGauge.prototype = {
       .attr('class', 'positivegaugetext')
       .append('tspan')
       .attr('id', 'depth').attr('dy', '0px').attr('font-size', '60').text('99.9');
+
+
+    var windmarker = chart.append("g")
+      .attr("id", "windmarker")
+      .attr("class", "truewind");
+    windmarker.append("path").attr("d", "M 400,100 L  385,130  a 20,20 0 1,0 30,0 z");
+    windmarker.append("path").attr("d", "M 390,400 l 10,-300 10,300 z")
+      .attr("style", "fill:#00FF00;stroke:#00FF00;stroke-width:1")
+      .attr("transform", "rotate(30 400 400)");
+    windmarker.append("path").attr("d", "M 390,400 l 10,-300 10,300 z")
+      .attr("style", "fill:#ff0000;stroke:#ff0000;stroke-width:1")
+      .attr("transform", "rotate(-30 400 400)");
+    windmarker.append("text").attr("id", "windmarkertext").attr("x", "400").attr("y", "140")
+      .attr("text-anchor", "middle").attr("dominant-baseline", "middle")
+      .attr("class", "text").text("0");
+
+    var apparentwindmarker = chart.append("g")
+      .attr("id", "apparentwindmarker").attr("class", "apparentwind");
+    apparentwindmarker.append("path").attr("d", "M 400,100 L  385,70  a 20,20 0 1,1 30,0 z");
+    apparentwindmarker.append("text").attr("id", "apparentwindmarkertext").attr("x", "400").attr("y", "60")
+      .attr("text-anchor", "middle").attr("dominant-baseline", "middle")
+      .attr("class", "text").text("0");
+
+    this.drawBoat(chart);
   },
 
   arcForAngle: function (angle) {
@@ -139,11 +165,28 @@ SailGauge.prototype = {
       case 'course':
         this.updateCourse(msg);
         break;
+      case 'speed':
+        d3.select('#speed').text(msg.knots.toFixed(1));
+        break;
+      case 'wind':
+        switch (msg.reference) {
+          case 'apparent':
+            this.rotateAnimated('#apparentwindmarker', msg.angle, 400, 400, 20);
+            d3.select("#apparentwindmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 60)");
+            d3.select("#apparentwindmarkertext").text(Number(msg.speed).toFixed(1));
+            break;
+          case 'true boat':
+            this.rotateAnimated('#windmarker', msg.angle, 400, 400, 20);
+            d3.select("#windmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 140)");
+            d3.select("#windmarkertext").text(Number(msg.speed).toFixed(1));
+            this.trueWindAngleStream.push(Number(msg.angle));
+        }
+        break;
     }
   },
-  trackTrue:0,
-  bearingToMark:45,
-  updateCourse: function(msg) {
+  trackTrue: 0,
+  bearingToMark: 45,
+  updateCourse: function (msg) {
     this.trackTrue = msg.heading;
     d3.select('#tracktruetext').text(this.trackTrue.toFixed(0) + '°');
     this.rotateAnimated('#rose', -1 * this.trackTrue, 400, 400, 200);
@@ -183,7 +226,34 @@ SailGauge.prototype = {
     this.depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
 //      drawSparkline("#depthSpark", data, 100, 50);
     });
+    this.trueWindAngleStream.slidingTimeWindow(30 * 1000).onValue(function (data) {
+      var twa_max = 0;
+      var twa_min = 360;
+      data.forEach(function (item) {
+        if (item.value > twa_max) {
+          twa_max = item.value
+        }
+        ;
+        if (item.value < twa_min) {
+          twa_min = item.value
+        }
+      });
+//      d3.select("#portwindsector").attr("d", arcForAngle(twa_max - twa_min));
+      d3.select("#gportwindsector").attr("transform", "rotate(" + (twa_min - 30) + " 400 400)");
+//      d3.select("#starboardwindsector").attr("d", arcForAngle(twa_max - twa_min));
+      d3.select("#gstarboardwindsector").attr("transform", "rotate(" + (twa_min + 30) + " 400 400)");
+    });
+  },
+  drawBoat: function (chart) {
+    var boat = chart.append('g').attr('id', 'boat').attr('transform', 'rotate(90 100 100) translate(150 -450) scale(2.5)')
+    boat.append('path')
+      .attr('style', 'stroke:#00ff00;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1')
+      .attr('d', 'm 0,100 c 150,-100 200,-35 200,-35 0,35 0,35 0,35')
+      .attr('class', 'boat');
+    boat.append('path')
+      .attr('style', 'stroke:#dd0000;stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1')
+      .attr('d', 'm 200,100 c 0,35 0,35 0,35  0,0 -70,65 -200,-35')
+      .attr('class', 'boat');
   }
-
 
 }
