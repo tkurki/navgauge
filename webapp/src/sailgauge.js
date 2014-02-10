@@ -3,6 +3,7 @@ function SailGauge() {
 
 SailGauge.prototype = {
   depthStream: new Bacon.Bus(),
+  courseStream: new Bacon.Bus(),
   trueWindAngleStream: new Bacon.Bus(),
   lastAutopilotReceiveTime : 0,
   init: function (selector, size) {
@@ -71,13 +72,16 @@ SailGauge.prototype = {
   drawMark: function (rose) {
     var mark = rose.append('g').attr('id', 'mark');
     mark.append('path').attr('d', "M 385,60 L 415,60 400,90 z").attr('class', 'mark');
-    mark.append('circle').attr('cx', '400').attr('cy', '70').attr('r', '11').attr('stroke', 'none').attr('fill', 'white');
+    mark.append('circle').attr('cx', '400').attr('cy', '70').attr('r', '14').attr('stroke', 'none').attr('fill', 'white');
     mark.append('text')
+      .attr('id','markdistance')
       .attr('x', '400').attr('y', '70')
       .attr('class', 'marktext')
       .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').text('000');
-    mark.append('circle').attr('cx', '400').attr('cy', '118').attr('r', '18').attr('stroke', 'none').attr('fill', 'white');
-    mark.append('text').attr('x', '400').attr('y', '118').attr('class', 'marktext')
+    mark.append('circle').attr('cx', '400').attr('cy', '118').attr('r', '14').attr('stroke', 'none').attr('fill', 'white');
+    mark.append('text')
+      .attr('id','marktext')
+      .attr('x', '400').attr('y', '118').attr('class', 'marktext')
       .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle').text('0.0');
   },
   drawBackground: function (chart, selector, size) {
@@ -113,12 +117,23 @@ SailGauge.prototype = {
       .attr("text-anchor", "middle").attr("dominant-baseline", "middle")
       .attr("font-size", "60").text("-");
   },
+  drawWindSectors: function (chart) {
+    chart.append("g").attr("id","gportwindsector").attr("transform","rotate(0 400 400)")
+      .append("path")
+        .attr("id","portwindsector").attr("d","M400,400 v-300 a300,300 1 0,1 0,0 z")
+        .attr("fill","#ffdddd").attr("stroke","none");
+    chart.append("g").attr("id","gstarboardwindsector").attr("transform","rotate(0 400 400)")
+      .append("path")
+        .attr("id","starboardwindsector").attr("d","M400,400 v-300 a300,300 1 0,1 0,0 z")
+        .attr("fill","#ddffdd").attr("stroke","none");
+  },
   drawSvg: function (selector, size) {
     var chart = this.drawBackground(chart, selector, size);
     var rose = this.drawCompassRose(chart, size);
-    this.drawMark(rose);
     this.drawTicks();
     this.drawTrackLabel(chart);
+    this.drawWindSectors(rose);
+    this.drawMark(rose);
     this.drawWindMarkers(chart);
     this.drawBoat(chart);
     this.drawSpeedLabel(chart);
@@ -207,11 +222,11 @@ SailGauge.prototype = {
   updateMark: function (msg) {
     d3.select('#markdistance').text(Number(msg.distance).toFixed(1));
     this.bearingToMark = msg.bearing;
-    this.rotateAnimated('#mark', this.bearingToMark, 400, 400, 200);
     d3.select("#mark").attr("display", "inline");
-    d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 70)");
-    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
+    d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
+    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 70)");
     d3.select('#marktext').text(msg.bearing.toFixed(0));
+    this.rotateAnimated('#mark', this.bearingToMark, 400, 400, 200);
     this.lastAutopilotReceiveTime = Date.now();
   },
   onData: function onMessage(msg) {
@@ -221,6 +236,7 @@ SailGauge.prototype = {
         break;
       case 'course':
         this.updateCourse(msg);
+        this.courseStream.push(msg);
         break;
       case 'speed':
         d3.select('#speed').text(msg.knots.toFixed(1));
@@ -243,15 +259,15 @@ SailGauge.prototype = {
     this.trackTrue = msg.heading;
     d3.select('#tracktruetext').text(this.trackTrue.toFixed(0) + '°');
     this.rotateAnimated('#rose', -1 * this.trackTrue, 400, 400, 200);
-    d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 70)");
-    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
+    d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
+    d3.select('#markdistance').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 70)");
   },
   lastDepthReceiveTime: 0,
   updateDepthDisplay: function (msg) {
     var depth = Number(msg.depth);
     if (depth < 200) {
       var depthText = d3.select('#depth');
-      depthText.text(depth.toFixed(1)).attr("display", "inline");
+      depthText.text(depth.toFixed(1) + 'm').attr("display", "inline");
       var fontSize = this.depthFontSize(depth);
       depthText.attr('font-size', fontSize);
       depthText.attr('dy', (fontSize * 0.7 ) - 60);
@@ -294,22 +310,20 @@ SailGauge.prototype = {
     this.depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
       doDrawSparkLine("#depthSpark", data, "depth", 100, 50);
     });
-    this.trueWindAngleStream.slidingTimeWindow(30 * 1000).onValue(function (data) {
-      var twa_max = 0;
-      var twa_min = 360;
-      data.forEach(function (item) {
-        if (item.value > twa_max) {
-          twa_max = item.value
-        }
-        ;
-        if (item.value < twa_min) {
-          twa_min = item.value
-        }
-      });
-//      d3.select("#portwindsector").attr("d", arcForAngle(twa_max - twa_min));
-      d3.select("#gportwindsector").attr("transform", "rotate(" + (twa_min - 30) + " 400 400)");
-//      d3.select("#starboardwindsector").attr("d", arcForAngle(twa_max - twa_min));
-      d3.select("#gstarboardwindsector").attr("transform", "rotate(" + (twa_min + 30) + " 400 400)");
+    var groundWindBearing = this.trueWindAngleStream.combine(this.courseStream,function (trueWind, courseMsg) {
+      return trueWind + courseMsg.heading;
+    });
+
+    var that = this;
+    groundWindBearing.slidingTimeWindow(30 * 1000).throttle(1000).onValue(function (data) {
+      if (data.length < 5) return;
+      var copyData = data.slice(0).sort(function(a,b){return a.value - b.value;});
+      var twa_max = copyData[Math.round(copyData.length * 0.95)].value;
+      var twa_min = copyData[Math.round(copyData.length * 0.05)].value;
+      d3.select("#portwindsector").attr("d", that.arcForAngle(twa_max - twa_min));
+      d3.select("#gportwindsector").attr("transform", "rotate(" + (twa_min - 30 ) + " 400 400)");
+      d3.select("#starboardwindsector").attr("d", that.arcForAngle(twa_max - twa_min));
+      d3.select("#gstarboardwindsector").attr("transform", "rotate(" + (twa_min + 30 ) + " 400 400)");
     });
   },
   drawBoat: function (chart) {

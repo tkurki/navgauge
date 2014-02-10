@@ -36,12 +36,14 @@ Polar.prototype = {
       .attr('viewBox', "0 0 960 960")
       .attr('preserveAspectRatio', "xMidYMid meet")
       .attr('class', 'chart')
+    this.drawBackgroundArrow(chart);
 
     var g = chart.append('g')
       .attr('transform', 'translate(' + (this.margin.left + this.width / 2) + ',' + (this.margin.top + this.height / 2) + ')')
       .attr('width', this.width)
       .attr('height', this.height)
       .attr('class', 'main');
+
 
     var radius = Math.min(this.width / 2, this.height / 2);
     g.append('circle').attr('r', radius).attr('class', 'perimeter');
@@ -56,9 +58,13 @@ Polar.prototype = {
       })
       .append("line").attr("x2", radius);
 
-
     this.gr = g.append("g").attr("class", "r axis");
     this.gCircle = g.append("g");
+
+    chart.append('text')
+      .attr('class', 'legend')
+      .attr('dy', '1.2em')
+      .text('Polar performance');
   },
 
   drawGridCircles: function (r) {
@@ -124,5 +130,15 @@ Polar.prototype = {
         .attr("r", 1);
       ;
     }
+  },
+
+  drawBackgroundArrow: function (chart) {
+    var arrow = chart.append('g').
+      attr('id', 'boat').attr('transform', 'translate(500 200) rotate (90 0 0)  scale(3)')
+      .attr('style','stroke-opacity:0.5;fill-opacity:0.5');
+    arrow.append('path')
+      .attr('d', 'M 0 0 L 0 -30 100 -30 100 -70 180 0 100 70 100 30 0 30 z')
+      .attr('class', 'boat sp');
   }
+
 }

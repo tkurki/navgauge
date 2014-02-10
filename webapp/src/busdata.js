@@ -10,7 +10,7 @@ Busdata.prototype = {
     var table = $(this.selector)
       .append(
         $('<table/>')
-        .addClass('table table-striped table-bordered sorted_table')
+        .addClass('table table-bordered sorted_table')
         .append(
           $('<thead/>')
           .append(

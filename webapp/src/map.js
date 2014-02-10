@@ -1,6 +1,9 @@
 function Map() {
   this.lastLat = 0;
   this.lastLon = 0;
+  this.markersBuffers = [[],[],[],[]];
+  this.shiftedMarkersBuffers = [this.markersBuffers[0], this.markersBuffers[2], this.markersBuffers[3], this.markersBuffers[1]];
+  this.markerCounter = 0;
   this.pointIcon = L.icon({
     iconUrl: 'images/point.png',
     shadowUrl: 'images/point.png',
@@ -35,7 +38,17 @@ Map.prototype = {
     if (this.lastLat - data.lat != 0 || this.lastLon - data.lon != 0) {
       var center = [data.lat, data.lon];
       this.map.panTo(center);
-      L.marker(center, {icon: this.pointIcon}).addTo(this.map);
+      var theMarker = L.marker(center, {icon: this.pointIcon});
+      theMarker.addTo(this.map);
+      theMarker.myid = this.markerCounter +1;
+
+      this.markersBuffers[this.markerCounter++ % this.markersBuffers.length].push(theMarker);
+      for (i = 0; i < this.markersBuffers.length; i++) {
+        if (this.shiftedMarkersBuffers[i].length > Math.pow(5,i+i)) {
+          var markerToRemove = this.shiftedMarkersBuffers[i].shift();
+          this.map.removeLayer(markerToRemove);
+        }
+      }
     }
     this.lastLat = data.lat;
     this.lastLon = data.lon;

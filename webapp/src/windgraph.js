@@ -18,7 +18,7 @@ function Windgraph() {
       groundWind: Number(heading) + Number(windData.angle),
       speed: Number(windData.speed)
     }
-  }).throttle(500);
+  }).throttle(1000);
 
   var that = this;
   var windWithHistory = windWithGroundwind.slidingTimeWindow(10 * 60 * 1000).onValue(function (h) {
@@ -33,6 +33,7 @@ Windgraph.prototype = {
       .attr('viewBox', "0 0 960 960")
       .attr('preserveAspectRatio', "xMidYMid meet")
       .attr('class', 'chart')
+
 
     var g = chart.append('g')
       .attr('transform', 'translate(' + (this.margin.left + this.width / 2) + ',' + (this.margin.top + this.height / 2) + ')')
@@ -56,6 +57,11 @@ Windgraph.prototype = {
 
     this.gr = g.append("g").attr("class", "r axis");
     this.gCircle = g.append("g");
+
+    chart.append('text')
+      .attr('class', 'legend')
+      .attr('dy', '1.2em')
+      .text('Ground wind history');
   },
   drawGridCircles: function (r) {
     var gridCircles = this.gr.selectAll("g").data(r.ticks(5), function (d) {
