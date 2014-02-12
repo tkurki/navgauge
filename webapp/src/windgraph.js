@@ -27,6 +27,19 @@ function Windgraph() {
 }
 
 Windgraph.prototype = {
+  drawRose: function (chart) {
+    for (i = 0; i < 4; i++) {
+      var roseArrowG = chart.append('g')
+        .attr('transform', 'translate(' + (this.width / 2 + this.margin.left) + ' ' + (this.height / 2 + this.margin.top) + ') rotate(' + (i * 90) + ' 0 0)')
+        .attr('opacity','0.5');
+      roseArrowG.append('path')
+        .attr('d', 'M 0 0 L 40 -40 ' +(this.width / 2) + ' 0 z')
+        .attr('fill', 'red');
+      roseArrowG.append('path')
+        .attr('d', 'M 0 0 L 40 40 ' +(this.width / 2) + ' 0 z')
+        .attr('fill', 'grey');
+    }
+  },
   init: function (theSelector) {
     var chart = d3.select(theSelector)
       .append('svg:svg')
@@ -43,6 +56,7 @@ Windgraph.prototype = {
 
     var radius = Math.min(this.width / 2, this.height / 2);
     g.append('circle').attr('r', radius).attr('class', 'perimeter');
+    this.drawRose(chart);
 
     var ga = g.append("g")
       .attr("class", "a axis")
@@ -57,7 +71,6 @@ Windgraph.prototype = {
 
     this.gr = g.append("g").attr("class", "r axis");
     this.gCircle = g.append("g");
-
     chart.append('text')
       .attr('class', 'legend')
       .attr('dy', '1.2em')
