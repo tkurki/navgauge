@@ -1,3 +1,18 @@
+circle.perimeter {
+    fill: none;
+    stroke-dasharray: none;
+    stroke: white;
+    stroke-width:8;
+
+}
+
+.axis line,
+.axis circle {
+    fill: none;
+    stroke: white;
+    stroke-dasharray: 2, 1;
+}
+
 .s1 {
     background-image: linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
     background-image: -o-linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
@@ -22,8 +37,9 @@
 .s1 .positivegaugetext {stroke:#FF928F;fill:#FF928F}
 .s1 .negativegaugetext {stroke:#A61511;fill:#A61511}
 .s1 .sparkline {stroke:#FF928F}
-
-
+.s1 circle.perimeter { stroke: #333;}
+.s1 .legend {fill:white;stroke:white;font-size: 2.5em;}
+.s1 .table {color:white}
 
 .sp {
     background-image: linear-gradient(bottom, rgb(87,87,87) 9%, rgb(0,0,0) 50%);
