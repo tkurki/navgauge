@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+  <link href="css/swipelayout.css" rel="stylesheet">
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="lib/Bacon.min.js"></script>
+  <script type="text/javascript" src="lib/swipe.js"></script>
+  <script type="text/javascript" src="lib/jquery-1.10.2.min.js"></script>
+  <script src="/primus/primus.js"></script>
+  <script src="/lib/messages.js"></script>
+  <script type="text/javascript" src="src/busdata.js"></script>
+  <script type="text/javascript" src="src/polar.js"></script>
+  <script type="text/javascript" src="src/map.js"></script>
+  <script type="text/javascript" src="src/windgraph.js"></script>
+  <script type="text/javascript" src="src/sailgauge.js"></script>
+  <script type="text/javascript" src="slidingTimeWindow.js"></script>
+  <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
+  <script src="leaflet-0.6.4/leaflet.js"></script>
+  <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
+  <link rel="stylesheet" href="styles/colors.css"/>
+</head>
+<body>
+<section class="content s1 sp">
+  <div id='slider' class='swipe'>
+    <div class='swipe-wrap'>
+      <div id="sailgauge">
+      </div>
+      <div id="windgraph">
+      </div>
+      <div id="polar" >
+      </div>
+      <div id="busdatacontainer" style="overflow: scroll">
+        <div id="busdata"/>
+      </div>
+    </div>
+    <div id="map">
+    </div>
+  </div>
+  </div>
+</section>
+<footer>
+  <div id="left" class="left"></div>
+  <div id="right" class="right"></div>
+</footer>
+<script>
+  var gaugePrimus;
+
+
+  var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
+      {reconnect: {
+        maxDelay: 60000,
+        minDelay: 500,
+        retries: Infinity
+      }});
+
+  var gaugeData = new Bacon.Bus();
+  gaugePrimus.on('data', function (data) {
+    gaugeData.push(data);
+  });
+
+  var busdataPrimus = undefined;
+
+  var rawData = new Bacon.Bus();
+  var busdata = new Busdata();
+  busdata.init("#busdata");
+  rawData.onValue(busdata.onData);
+
+  function updateConnectionsOnSwipeDivId(elementId) {
+    if (elementId === 'busdatacontainer') {
+      busdataPrimus = Primus.connect("http://" + window.location.host + "/",
+          {reconnect: {
+            maxDelay: 60000,
+            minDelay: 500,
+            retries: Infinity
+          }});
+      busdataPrimus.on('data', function (data) {
+        rawData.push(data);
+      });
+    } else {
+      if (typeof busdataPrimus !== 'undefined') {
+        busdataPrimus.end();
+        busdataPrimus = undefined;
+      }
+    }
+  }
+
+  var polar = new Polar();
+  polar.init("#polar");
+  gaugeData.onValue(polar.onData.bind(polar));
+
+  var windgraph = new Windgraph();
+  windgraph.init("#windgraph");
+  gaugeData.onValue(windgraph.onData.bind(windgraph));
+
+
+  var map = new Map();
+  map.init('map');
+  gaugeData.filter(function (msg) {
+    return msg.type === 'position'
+  }).onValue(map.onData.bind(map));
+
+  var sailgauge = new SailGauge();
+  sailgauge.init('#sailgauge', 800);
+  gaugeData.onValue(sailgauge.onData.bind(sailgauge));
+
+
+  window.mySwipe = new Swipe(document.getElementById('slider'), {
+    startSlide: 0,
+    speed: 500,
+    continuous: true,
+    disableScroll: false,
+    stopPropagation: false,
+    callback: function (index, elem) {
+      updateConnectionsOnSwipeDivId(elem.getAttribute('id'));
+    },
+    transitionEnd: function (index, elem) {
+    }});
+
+  $("#left").click(window.mySwipe.prev);
+  $("#right").click(window.mySwipe.next);
+
+
+</script>
+</body>
+</html>

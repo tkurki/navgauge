@@ -1,6 +1,6 @@
 The MIT License (MIT)
 
-Copyright (c) 2013 Teppo Kurki
+Copyright (c) 2013-14 Teppo Kurki
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

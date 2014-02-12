@@ -1,0 +1,60 @@
+body {
+    margin: 0;
+}
+
+* {
+    box-sizing: border-box
+}
+
+.content {
+    position: absolute;
+    width: 100%;
+    overflow: auto;
+    margin: 0;
+    top: 0;
+}
+
+.swipe {
+    overflow: hidden;
+    visibility: visible;
+    position: relative;
+}
+
+.swipe-wrap {
+    overflow: hidden;
+    position: relative;
+}
+
+.swipe-wrap > div {
+    float: left;
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: scroll;
+}
+
+footer {
+    background: rgba(200, 100, 50, 0.2);
+    height: 50px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+svg {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 50px;
+}
+
+.left {
+    float: left;
+    width: 50%;
+    height: 50px;
+}
+
+.right {
+    float: right;
+    width: 50%;
+    height: 50px;
+}
