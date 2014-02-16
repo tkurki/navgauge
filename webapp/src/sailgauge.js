@@ -1,11 +1,15 @@
 function SailGauge() {
   this.visible = true;
+  this.apparentWindStream = new Bacon.Bus();
+  this.apparentWindStream.throttle(200).onValue(this.updateApparentWind.bind(this));
+  this.trueWindStream = new Bacon.Bus();
+  this.trueWindStream.throttle(200).onValue(this.updateTrueWind.bind(this));
+  this.trueWindAngleStream = this.trueWindStream.map(function(msg) {return Number(msg.angle);});
 }
 
 SailGauge.prototype = {
   depthStream: new Bacon.Bus(),
   courseStream: new Bacon.Bus(),
-  trueWindAngleStream: new Bacon.Bus(),
   lastAutopilotReceiveTime : 0,
   init: function (selector, size) {
     this.drawSvg(selector, size);
@@ -209,19 +213,17 @@ SailGauge.prototype = {
       dirs = dirs.splice(1);
     }
   },
-  updateWind: function (msg) {
-    switch (msg.reference) {
-      case 'apparent':
-        this.rotateAnimated('#apparentwindmarker', msg.angle, 400, 400, 20);
-        d3.select("#apparentwindmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 60)");
-        d3.select("#apparentwindmarkertext").text(Number(msg.speed).toFixed(1));
-        break;
-      case 'true boat':
-        this.rotateAnimated('#windmarker', msg.angle, 400, 400, 20);
-        d3.select("#windmarkertext").attr("transform", "rotate(" + (-1 * msg.angle) + " 400 140)");
-        d3.select("#windmarkertext").text(Number(msg.speed).toFixed(1));
-        this.trueWindAngleStream.push(Number(msg.angle));
-    }
+  updateApparentWind: function (msg) {
+    this.rotateAnimated('#apparentwindmarker', msg.angle, 400, 400, 20);
+    d3.select("#apparentwindmarkertext")
+      .attr("transform", "rotate(" + (-1 * msg.angle) + " 400 60)")
+      .text(Number(msg.speed).toFixed(1));
+  },
+  updateTrueWind: function (msg) {
+    this.rotateAnimated('#windmarker', msg.angle, 400, 400, 20);
+    d3.select("#windmarkertext")
+      .attr("transform", "rotate(" + (-1 * msg.angle) + " 400 140)")
+      .text(Number(msg.speed).toFixed(1));
   },
   updateMark: function (msg) {
     d3.select('#markdistance').text(Number(msg.distance).toFixed(1));
@@ -246,7 +248,13 @@ SailGauge.prototype = {
         d3.select('#speed').text(msg.knots.toFixed(1));
         break;
       case 'wind':
-        this.updateWind(msg);
+        switch (msg.reference) {
+          case 'apparent':
+            this.apparentWindStream.push(msg);
+            break;
+          case 'true boat':
+            this.trueWindStream.push(msg);
+        }
         break;
       case 'speed':
         d3.select('#speed').text(msg.knots.toFixed(1));
@@ -314,12 +322,12 @@ SailGauge.prototype = {
     this.depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
       doDrawSparkLine("#depthSpark", data, "depth", 100, 50);
     });
-    var groundWindBearing = this.trueWindAngleStream.combine(this.courseStream,function (trueWind, courseMsg) {
+    var groundWindAngleStream = this.trueWindAngleStream.combine(this.courseStream,function (trueWind, courseMsg) {
       return trueWind + courseMsg.heading;
     });
 
     var that = this;
-    groundWindBearing.slidingTimeWindow(30 * 1000).throttle(1000).onValue(function (data) {
+    groundWindAngleStream.slidingTimeWindow(30 * 1000).throttle(1000).onValue(function (data) {
       if (data.length < 5) return;
       var copyData = data.slice(0).sort(function(a,b){return a.value - b.value;});
       var twa_max = copyData[Math.round(copyData.length * 0.95)].value;
