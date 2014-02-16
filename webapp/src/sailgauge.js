@@ -277,16 +277,14 @@ SailGauge.prototype = {
   lastDepthReceiveTime: 0,
   updateDepthDisplay: function (msg) {
     var depth = Number(msg.depth);
-    if (depth < 200) {
-      var depthText = d3.select('#depth');
-      depthText.text(depth.toFixed(1) + 'm').attr("display", "inline");
-      var fontSize = this.depthFontSize(depth);
-      depthText.attr('font-size', fontSize);
-      depthText.attr('dy', (fontSize * 0.7 ) - 60);
-      depthText.attr('fill', depth < 6 ? 'red' : null);
-      depthText.attr('font-weight', depth < 6 ? 'bold' : null);
-      this.lastDepthReceiveTime = Date.now();
-    }
+    var depthText = d3.select('#depth');
+    depthText.text(depth.toFixed(1) + 'm').attr("display", "inline");
+    var fontSize = this.depthFontSize(depth);
+    depthText.attr('font-size', fontSize);
+    depthText.attr('dy', (fontSize * 0.7 ) - 60);
+    depthText.attr('fill', depth < 6 ? 'red' : null);
+    depthText.attr('font-weight', depth < 6 ? 'bold' : null);
+    this.lastDepthReceiveTime = Date.now();
   },
   depthFontSize: function (depth) {
     var minFontSize = 60;
@@ -317,9 +315,10 @@ SailGauge.prototype = {
     d3.select(selector).attr("d", line(data));
   },
   initStreams: function () {
-    this.depthStream.onValue(this.updateDepthDisplay.bind(this));
+    var sanitizedDepthStream = this.depthStream.filter(function(msg){return msg.depth < 200;});
+    sanitizedDepthStream.onValue(this.updateDepthDisplay.bind(this));
     var doDrawSparkLine = this.drawSparkline.bind(this);
-    this.depthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
+    sanitizedDepthStream.slidingTimeWindow(60 * 1000).onValue(function (data) {
       doDrawSparkLine("#depthSpark", data, "depth", 100, 50);
     });
     var groundWindAngleStream = this.trueWindAngleStream.combine(this.courseStream,function (trueWind, courseMsg) {
