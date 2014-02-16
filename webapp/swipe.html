@@ -67,6 +67,9 @@
   rawData.onValue(busdata.onData);
 
   function updateConnectionsOnSwipeDivId(elementId) {
+    for (var propertyKey in pages) {
+      pages[propertyKey].setVisible(propertyKey === elementId);
+    }
     if (elementId === 'busdatacontainer') {
       busdataPrimus = Primus.connect("http://" + window.location.host + "/",
           {reconnect: {
@@ -85,24 +88,26 @@
     }
   }
 
-  var polar = new Polar();
-  polar.init("#polar");
-  gaugeData.onValue(polar.onData.bind(polar));
+  var pages = {
+    polar : new Polar(),
+    windgraph : new Windgraph(),
+    map: new Map(),
+    sailgauge : new SailGauge()
+  }
 
-  var windgraph = new Windgraph();
-  windgraph.init("#windgraph");
-  gaugeData.onValue(windgraph.onData.bind(windgraph));
+  pages.polar.init("#polar");
+  gaugeData.onValue(pages.polar.onData.bind(pages.polar));
 
+  pages.windgraph.init("#windgraph");
+  gaugeData.onValue(pages.windgraph.onData.bind(pages.windgraph));
 
-  var map = new Map();
-  map.init('map');
+  pages.map.init('map');
   gaugeData.filter(function (msg) {
     return msg.type === 'position'
-  }).onValue(map.onData.bind(map));
+  }).onValue(pages.map.onData.bind(pages.map));
 
-  var sailgauge = new SailGauge();
-  sailgauge.init('#sailgauge', 800);
-  gaugeData.onValue(sailgauge.onData.bind(sailgauge));
+  pages.sailgauge.init('#sailgauge', 800);
+  gaugeData.onValue(pages.sailgauge.onData.bind(pages.sailgauge));
 
 
   window.mySwipe = new Swipe(document.getElementById('slider'), {
@@ -119,7 +124,6 @@
 
   $("#left").click(window.mySwipe.prev);
   $("#right").click(window.mySwipe.next);
-
 
 </script>
 </body>

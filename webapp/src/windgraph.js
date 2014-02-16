@@ -5,6 +5,7 @@ function Windgraph() {
   this.height = 960 - this.margin.top - this.margin.bottom;
 
   this.messages = new Bacon.Bus();
+  this.visible = false;
 
   var wind = this.messages.filter(function (msg) {
     return msg.type === 'wind' && msg.reference === 'true boat'
@@ -76,6 +77,9 @@ Windgraph.prototype = {
       .attr('dy', '1.2em')
       .text('Ground wind history');
   },
+  setVisible: function(flag) {
+    this.visible = flag;
+  },
   drawGridCircles: function (r) {
     var gridCircles = this.gr.selectAll("g").data(r.ticks(5), function (d) {
       return d
@@ -109,7 +113,7 @@ Windgraph.prototype = {
   },
   onData: function(msg) {this.messages.push(msg);},
   draw: function (history) {
-    if (history.length !== undefined && history.length > 0) {
+    if (this.visible && history.length !== undefined && history.length > 0) {
       var windColor =
         d3.scale.linear()
           .domain([0, history.length * .2, history.length * .4, history.length * .6, history.length * .95, history.length])

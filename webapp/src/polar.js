@@ -5,6 +5,7 @@ function Polar() {
   this.height = 960 - this.margin.top - this.margin.bottom;
   this.gr;
   this.gCircle;
+  this.visible = false;
 
   this.messages = new Bacon.Bus();
 
@@ -66,7 +67,9 @@ Polar.prototype = {
       .attr('dy', '1.2em')
       .text('Polar performance');
   },
-
+  setVisible: function(flag) {
+    this.visible = flag;
+    },
   drawGridCircles: function (r) {
     var gridCircles = this.gr.selectAll("g").data(r.ticks(5), function (d) {
       return d
@@ -105,7 +108,7 @@ Polar.prototype = {
 
 
   draw: function (history) {
-    if (history.length !== undefined && history.length > 0) {
+    if (this.visible && history.length !== undefined && history.length > 0) {
       var windColor =
         d3.scale.linear()
           .domain([0, 4, 6, 8, 10, 12])

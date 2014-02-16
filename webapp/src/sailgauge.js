@@ -1,4 +1,5 @@
 function SailGauge() {
+  this.visible = true;
 }
 
 SailGauge.prototype = {
@@ -21,6 +22,9 @@ SailGauge.prototype = {
         d3.select("#depth").attr("display", "none");
       }
     }, 5000);
+  },
+  setVisible: function(flag) {
+    this.visible = flag;
   },
   drawWindMarkers: function (chart) {
     var windmarker = chart.append("g")
@@ -150,7 +154,7 @@ SailGauge.prototype = {
     var tween = function (d, i, a) {
       return d3.interpolateString(previousTransform, 'rotate(' + angleTo + " " + x + " " + y + ")");
     }
-    d3g.transition().duration(millis).attrTween('transform', tween);
+    d3g.transition().duration(this.visible ? millis : 0).attrTween('transform', tween);
   },
   drawTicks: function () {
     var tickmarks = d3.select("#tickmarks");

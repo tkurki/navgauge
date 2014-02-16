@@ -14,6 +14,8 @@ function Map() {
     shadowAnchor: [0, 0],  // the same for the shadow
     popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
   });
+  this.visible = false;
+  this.center = [60.1, 24.8];
 }
 
 Map.prototype = {
@@ -34,11 +36,19 @@ Map.prototype = {
       transparent: true
     }).addTo(this.map);
   },
+  setVisible: function(flag) {
+    this.visible = flag;
+    if (this.visible) {
+      this.map.panTo(this.center);
+    }
+  },
   onData: function (data) {
     if (this.lastLat - data.lat != 0 || this.lastLon - data.lon != 0) {
-      var center = [data.lat, data.lon];
-      this.map.panTo(center);
-      var theMarker = L.marker(center, {icon: this.pointIcon});
+      this.center = [data.lat, data.lon];
+      if (this.visible) {
+        this.map.panTo(this.center);
+      }
+      var theMarker = L.marker(this.center, {icon: this.pointIcon});
       theMarker.addTo(this.map);
       theMarker.myid = this.markerCounter +1;
 
