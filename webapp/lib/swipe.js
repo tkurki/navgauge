@@ -345,7 +345,7 @@ function Swipe(container, options) {
 
       // determine if slide attempt triggers next/prev slide
       var isValidSlide =
-        Number(duration) < 250               // if slide duration is less than 250ms
+        Number(duration) < 500               // if slide duration is less than 250ms
           && Math.abs(delta.x) > 20            // and if slide amt is greater than 20px
           || Math.abs(delta.x) > width/2;      // or if slide amt is greater than half the width
 
