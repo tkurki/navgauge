@@ -1,3 +1,4 @@
+
 function Polar() {
   this.selector = "not_defined";
   this.margin = {top: 20, right: 15, bottom: 60, left: 60};
@@ -5,8 +6,7 @@ function Polar() {
   this.height = 960 - this.margin.top - this.margin.bottom;
   this.gr;
   this.gCircle;
-  this.visible = false;
-
+  this.isHidden = new Bacon.Bus();
   this.messages = new Bacon.Bus();
 
   var wind = this.messages.filter(function (msg) {
@@ -23,10 +23,10 @@ function Polar() {
     }
   });
   var that = this;
-  windAndSpeed.slidingTimeWindow(10 * 1000).throttle(5000).onValue(function (h) {
+  windAndSpeed.changes().holdWhen(this.isHidden.toProperty(true)).bufferWithTime(1000).onValue(function (h) {
     that.draw(h)
   });
-
+  var that = this;
 }
 
 Polar.prototype = {
@@ -67,9 +67,9 @@ Polar.prototype = {
       .attr('dy', '1.2em')
       .text('Polar performance');
   },
-  setVisible: function(flag) {
-    this.visible = flag;
-    },
+  setVisible: function (flag) {
+    this.isHidden.push(!flag);
+  },
   drawGridCircles: function (r) {
     var gridCircles = this.gr.selectAll("g").data(r.ticks(5), function (d) {
       return d
@@ -108,7 +108,7 @@ Polar.prototype = {
 
 
   draw: function (history) {
-    if (this.visible && history.length !== undefined && history.length > 0) {
+    if (history.length !== undefined && history.length > 0) {
       var windColor =
         d3.scale.linear()
           .domain([0, 4, 6, 8, 10, 12])
@@ -116,19 +116,18 @@ Polar.prototype = {
       var maxSpeed = 8;
       var r = d3.scale.linear().domain([0, maxSpeed]).range([0, Math.min(this.height, this.width) / 2]).nice();
       this.drawGridCircles(r);
-      var circleData = this.gCircle.selectAll('circle').data(history, function (d) {
-        return d.timestamp
-      });
+      var innerG = this.gCircle.append('g');
+      var circleData = innerG.selectAll('circle').data(history);
       circleData.enter()
         .append("circle")
         .attr("style", function (d, i) {
-          return "fill:" + windColor(d.value.windSpeed);
+          return "fill:" + windColor(d.windSpeed);
         })
         .attr('cx', function (d) {
-          return(r(d.value.speed * Math.cos((-d.value.angle - 90) * Math.PI / 180)) + Math.random() * 2 - 1);
+          return(r(d.speed * Math.cos((-d.angle - 90) * Math.PI / 180)) + Math.random() * 2 - 1);
         })
         .attr('cy', function (d) {
-          return(r(d.value.speed * Math.sin((-d.value.angle - 90) * Math.PI / 180)) + Math.random() * 2 - 1);
+          return(r(d.speed * Math.sin((-d.angle - 90) * Math.PI / 180)) + Math.random() * 2 - 1);
         })
         .attr("r", 1);
       ;
