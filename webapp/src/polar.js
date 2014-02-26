@@ -6,8 +6,10 @@ function Polar() {
   this.height = 960 - this.margin.top - this.margin.bottom;
   this.gr;
   this.gCircle;
-  this.isHidden = new Bacon.Bus();
+  this.isHidden = true;
   this.messages = new Bacon.Bus();
+  this.bufferedWindAndSpeed = new Bacon.Bus();
+  this.buffer = [];
 
   var wind = this.messages.filter(function (msg) {
     return msg.type === 'wind' && msg.reference === 'true boat'
@@ -23,10 +25,18 @@ function Polar() {
     }
   });
   var that = this;
-  windAndSpeed.changes().holdWhen(this.isHidden.toProperty(true)).bufferWithTime(1000).onValue(function (h) {
-    that.draw(h)
+  windAndSpeed.onValue(function(msg){
+    if (that.isHidden) {
+      that.buffer.push(msg);
+      if (that.buffer.length > 1000) {
+        that.bufferedWindAndSpeed.plug(Bacon.fromArray(that.buffer));
+        that.buffer = [];
+      }
+    } else {
+      that.bufferedWindAndSpeed.push(msg);
+    }
   });
-  var that = this;
+  this.bufferedWindAndSpeed.bufferWithTime(1000).onValue(that.draw.bind(this));
 }
 
 Polar.prototype = {
@@ -68,7 +78,9 @@ Polar.prototype = {
       .text('Polar performance');
   },
   setVisible: function (flag) {
-    this.isHidden.push(!flag);
+    this.isHidden = !flag;
+    this.bufferedWindAndSpeed.plug(Bacon.fromArray(this.buffer));
+    this.buffer = [];
   },
   drawGridCircles: function (r) {
     var gridCircles = this.gr.selectAll("g").data(r.ticks(5), function (d) {
