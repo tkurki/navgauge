@@ -18,7 +18,7 @@ Navgauge uses gpspipe from [gpsd](http://catb.org/gpsd/) to access NMEA 0183 dat
 Captured data sets, either directly from actisense-serial and gpspipe or Navgauge-generated unified json stream, can be
 used to 'play back' real world data to use in debugging and development.
 
-NMEA 0183 data can also be broadcast via UDP to be used in other applications such as INavX and iRegatta.
+NMEA 0183 data can also be broadcast via UDP to be used in other applications such as iNavX and iRegatta.
 
 ## See it in action on Heroku
 
