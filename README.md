@@ -35,7 +35,7 @@ npm install https://github.com/tkurki/navgauge/tarball/master
 
 2. Start the server with a sample data from the boat Cassiopeia: 
 ```
-navgauge/bin/cassiopeia
+node_modules/navgauge/bin/cassiopeia
 ```
 
 3. Open [http://localhost:8080/](http://localhost:8080/) to see a navigation display or
