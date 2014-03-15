@@ -256,9 +256,6 @@ SailGauge.prototype = {
             this.trueWindStream.push(msg);
         }
         break;
-      case 'speed':
-        d3.select('#speed').text(msg.knots.toFixed(1));
-        break;
       case '2waypoint':
         this.updateMark(msg);
         break;
