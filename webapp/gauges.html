@@ -6,13 +6,15 @@
     <title>Gauges</title>
 
 <script src="lib/tween-min.js"></script>
-<script src="lib/steelseries-min.js"></script>
+<script src="lib/steelseries.js"></script>
 <script src="lib/Bacon.js"></script>
 <script src="primus/primus.js"></script>    
 </head>
-<body onload="init();" style="background-color:#black">
+<body onload="init();" style="background-color:#000">
 
 <canvas id="speedCanvas" width="25%" height="25%"></canvas>
+<canvas id="depthCanvas" width="25%" height="25%"></canvas>
+<canvas id="compassCanvas" width="25%" height="25%"></canvas>
 
 
 
@@ -20,28 +22,14 @@
 
 <script>
 var speed;
+var depth;
+var compass;
+
     function init() {
-        var sections = [steelseries.Section(0, 25, 'rgba(0, 0, 220, 0.3)'),
-                        steelseries.Section(25, 50, 'rgba(0, 220, 0, 0.3)'),
-                        steelseries.Section(50, 75, 'rgba(220, 220, 0, 0.3)') ],
-
-            areas = [steelseries.Section(75, 100, 'rgba(220, 0, 0, 0.3)')],
-
-            valGrad = new steelseries.gradientWrapper(  0,
-                                                        100,
-                                                        [ 0, 0.33, 0.66, 0.85, 1],
-                                                        [ new steelseries.rgbaColor(0, 0, 200, 1),
-                                                          new steelseries.rgbaColor(0, 200, 0, 1),
-                                                          new steelseries.rgbaColor(200, 200, 0, 1),
-                                                          new steelseries.rgbaColor(200, 0, 0, 1),
-                                                          new steelseries.rgbaColor(200, 0, 0, 1) ]);
-
-
-
          speed = new steelseries.Radial('speedCanvas', {
                             gaugeType: steelseries.GaugeType.TYPE4,
+                            frameDesign: steelseries.FrameDesign.TILTED_BLACK,
                             size: 400,
-                            area: areas,
                             titleString: "SOG",
                             unitString: "knots",
                             lcdVisible: true,
@@ -50,8 +38,34 @@ var speed;
                             maxMeasuredValueVisible:true,
                             thresholdVisible:false,
                             ledVisible:false,
-                            pointerType:5
+                            pointerType: steelseries.PointerType.TYPE4
                         });
+
+       var depthSections = [steelseries.Section(0, 4, 'rgba(255, 0, 0, 0.3)'),
+                        steelseries.Section(4, 8, 'rgba(220, 220, 0, 0.3)') ];
+
+         depth = new steelseries.Radial('depthCanvas', {
+                            gaugeType: steelseries.GaugeType.TYPE4,
+                            frameDesign: steelseries.FrameDesign.TILTED_BLACK,
+                            size: 400,
+                            section: depthSections,
+                            titleString: "Depth",
+                            unitString: "m",
+                            lcdVisible: true,
+                            maxValue:20,
+                            maxMeasuredValue:0,
+                            maxMeasuredValueVisible:true,
+                            thresholdVisible:false,
+                            ledVisible:false,
+                            pointerType: steelseries.PointerType.TYPE2
+                        });  
+
+                 compass = new steelseries.Compass('compassCanvas', {
+                            frameDesign: steelseries.FrameDesign.TILTED_BLACK,
+                            size: 400,
+                            rotateFace: true,
+                            pointerType: steelseries.PointerType.TYPE5
+                            });
     }
 
 
@@ -66,11 +80,14 @@ var speed;
   gaugePrimus.on('data', function (msg) {
        switch (msg.type) {
       case 'depth':
+      depth.setValueAnimated(msg.depth);
         break;
       case 'course':
+      compass.setValueAnimated(msg.heading);
+      console.log(msg);
         break;
       case 'speed':
-        speed.setValueAnimated(msg.knots.toFixed(1));
+        speed.setValueAnimated(msg.knots);
         break;
   }
   gaugeData.push(msg);
@@ -79,6 +96,10 @@ var speed;
 gaugeData.filter(function(msg){msg.type === 'speed'}).scan(0, function(old, incoming) {incoming .knots> old ? incoming.knots : old}).changes().onValue(
     function(value) {
 speed.setMaxMeasuredValue(value);        
+    });
+gaugeData.filter(function(msg){msg.type === 'depth'}).scan(0, function(old, incoming) {incoming .knots> old ? incoming.knots : old}).changes().onValue(
+    function(value) {
+depth.setMaxMeasuredValue(value);        
     });
 </script>
 </body>
