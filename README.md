@@ -20,6 +20,12 @@ used to 'play back' real world data to use in debugging and development.
 
 NMEA 0183 data can also be broadcast via UDP to be used in other applications such as INavX and iRegatta.
 
+## See it in action on Heroku
+
+- Multifunction gauge with map: http://navgauge.herokuapp.com
+- Swipeable multipage display with multifunction gauge, ground wind history, performance polar history plot, raw bus data and map: http://navgauge.herokuapp.com/swipe.html
+- Gauges: http://navgauge.herokuapp.com/gauges.html
+
 ## Getting started with sample data
 0. Install Node.js
 1. Install Navgauge from tarball:
