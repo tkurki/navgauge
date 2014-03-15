@@ -77,15 +77,15 @@ bin/server.js and takes the following options:
 
 ## Why Navgauge?
 
-1.  Runs anywhere where you have Node, gpsd and C compiler for CANboat. My primary target is Raspberry Pi with its modest power consumption, but I've run Navgauge on OS X as well (CANnboat needs a small tweak on OS X though).
+1.  Runs anywhere where you have Node, gpsd and C compiler for CANboat. My primary target is Raspberry Pi with its modest power consumption, but I've run Navgauge on OS X as well.
 
-2. DIY: General purpose language and short write to test cycle. Javascript is easy to understand & write, with all its shortcomings, and there is a wealth of tutorials and whatnot for HTML5 development. Edit & restart or reload is all that is needed to see how your changes work. UI tweaking can be done directly in the browser. Bacon Js makes combining and routing messages easily approachable. JSON is human readable and understandable.
+2. DIY: General purpose language and short write-to-test cycle. Javascript is easy to understand & write, with all its shortcomings, and there is a wealth of tutorials and whatnot for HTML5 development. Edit & restart or reload is all that is needed to see how your changes work. UI tweaking can be done directly in the browser. Bacon Js makes combining and routing messages easily approachable. JSON is human readable and understandable.
 
-3. No need for desktop computer
+3. No need for desktop computer or a dedicated display. Everybody has a phone or a tablet.
 
-4. B&G SailSteer looked like something I'd like, but I don't want to upgrade my plotter.
+4. B&G SailSteer looked like something I'd like, but I don't want to upgrade my plotter (read: costs too much..).
 
-5. I was disappointed with the gauge displays available on my Raymarine i70. You have the data, do what you want as opposed to being [limited](http://n2kpi.blogspot.fi/2013/08/the-starting-point.html) by the built-in display formats and functions in MFDs. Want a sparkline for certain data? Change the color scheme? [Make depth figure big & red](https://github.com/tkurki/navgauge/commit/d9c3be806f2b1ace49164ab8153052d313f43043) if it is less than 6 meters? A [simple list of
+5. I was disappointed with the gauge displays available on my Raymarine i70. You have the data, do what you want as opposed to being [limited](http://n2kpi.blogspot.fi/2013/08/the-starting-point.html) by the built-in display formats and functions in MFDs. Want a sparkline for certain datum? Change the color scheme? [Make depth figure big & red](https://github.com/tkurki/navgauge/commit/d9c3be806f2b1ace49164ab8153052d313f43043) if it is less than 6 meters? A [simple list of
  all the data available on the bus](https://github.com/tkurki/navgauge/blob/master/webapp/busdata.html)? A
  [colored polar plot of ground wind history](https://github.com/tkurki/navgauge/commit/a15d6b46c81c496b871c2f9199ee5faa3323d0bb) with smoothly fading trail?? Just do it...
 
@@ -95,7 +95,7 @@ bin/server.js and takes the following options:
 I'd like to get more insight into navigation data
 - translate select N2K messages to NMEA 0183 for iRegatta et al (my case: wind info)
 - course projection and layline visualization on the map
-- transform data from one message type to another and push to the N2K bus, for example adjust depth below transducer to depth below keel and send it to the bus so that all N2k displays can use the same adjusted data
+- transform data from one message type to another and push to the N2K bus, for example adjust depth below transducer to depth below keel and send it back to the bus so that all N2k displays can use the same adjusted data
 
 
 ## Why..
