@@ -27,28 +27,28 @@ NMEA 0183 data can also be broadcast via UDP to be used in other applications su
 - Gauges: http://navgauge.herokuapp.com/gauges.html
 
 ## Getting started with sample data
-0. Install Node.js
-1. Install Navgauge from tarball:
+- Install Node.js
+- Install Navgauge from tarball:
 ```
 npm install https://github.com/tkurki/navgauge/tarball/master
 ```
 
-2. Start the server with a sample data from the boat Cassiopeia: 
+- Start the server with a sample data set from the boat Cassiopeia: 
 ```
 node_modules/navgauge/bin/cassiopeia
 ```
 
-3. Open [http://localhost:8080/](http://localhost:8080/) to see a navigation display or
-[http://localhost:8080/busdata.html](http://localhost:8080/busdata.html) to see the raw data
+-  Open [http://localhost:8080/](http://localhost:8080/) to see a navigation display, 
+[http://localhost:8080/swipe.html](http://localhost:8080/swipe.html) for a multi-page display or [http://localhost:8080/gauges.html](http://localhost:8080/gauges.html) for some sample gauges.
 
 ## Getting started with real data
 
 Navgauge uses shell commands to start CANboat command line tools `actisense-serial` and `analyzer` (N2K data) and
-`gpspipe` (NMEA 0183) so those need available on your path.
+`gpspipe` (NMEA 0183) so those need to be available on your path.
 
 Once you have command line access you can look at the
 data you have and figure out how basic navigation data such as speed, bearing and wind speed and direction are
-represented and figure out how to write the stream definition for your boat.
+represented and figure out how to write the stream definition for your boat. See for example [Cassiopeia] (https://github.com/tkurki/navgauge/blob/master/lib/boats/cassiopeia.js).
 
 Navgauge server is started with
 bin/server.js and takes the following options:
