@@ -23,7 +23,7 @@ NMEA 0183 data can also be broadcast via UDP to be used in other applications su
 ## See it in action on Heroku
 
 - Multifunction gauge with map: http://navgauge.herokuapp.com
-- Swipeable multipage display with multifunction gauge, ground wind history, performance polar history plot, raw bus data and map: http://navgauge.herokuapp.com/swipe.html
+- Swipeable multipage display with [multifunction gauge](http://navgauge.herokuapp.com/swipe/sailgauge), [ground wind history](http://navgauge.herokuapp.com/swipe/windgraph), [performance polar history plot](http://navgauge.herokuapp.com/swipe/polar), [raw bus data](http://navgauge.herokuapp.com/swipe/bus) and [map](http://navgauge.herokuapp.com/swipe/map).
 - Gauges: http://navgauge.herokuapp.com/gauges.html
 
 ## Getting started with sample data
@@ -39,7 +39,7 @@ node_modules/navgauge/bin/cassiopeia
 ```
 
 -  Open [http://localhost:8080/](http://localhost:8080/) to see a navigation display, 
-[http://localhost:8080/swipe.html](http://localhost:8080/swipe.html) for a multi-page display or [http://localhost:8080/gauges.html](http://localhost:8080/gauges.html) for some sample gauges.
+[http://localhost:8080/swipe.html](http://localhost:8080/swipe) for a multi-page display or [http://localhost:8080/gauges.html](http://localhost:8080/gauges.html) for some sample gauges.
 
 ## Getting started with real data
 
