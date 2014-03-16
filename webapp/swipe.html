@@ -2,23 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-  <link href="css/swipelayout.css" rel="stylesheet">
-  <link href="css/bootstrap.min.css" rel="stylesheet">
-  <script type="text/javascript" src="lib/Bacon.js"></script>
-  <script type="text/javascript" src="lib/swipe.js"></script>
-  <script type="text/javascript" src="lib/jquery-1.10.2.min.js"></script>
+  <link href="/css/swipelayout.css" rel="stylesheet">
+  <link href="/css/bootstrap.min.css" rel="stylesheet">
+  <script type="text/javascript" src="/lib/Bacon.js"></script>
+  <script type="text/javascript" src="/lib/swipe.js"></script>
+  <script type="text/javascript" src="/lib/jquery-1.10.2.min.js"></script>
   <script src="/primus/primus.js"></script>
   <script src="/lib/messages.js"></script>
-  <script type="text/javascript" src="src/busdata.js"></script>
-  <script type="text/javascript" src="src/polar.js"></script>
-  <script type="text/javascript" src="src/map.js"></script>
-  <script type="text/javascript" src="src/windgraph.js"></script>
-  <script type="text/javascript" src="src/sailgauge.js"></script>
-  <script type="text/javascript" src="slidingTimeWindow.js"></script>
-  <script type="text/javascript" src="d3.v3/d3.v3.js"></script>
-  <script src="leaflet-0.6.4/leaflet.js"></script>
-  <link rel="stylesheet" href="leaflet-0.6.4/leaflet.css"/>
-  <link rel="stylesheet" href="styles/colors.css"/>
+  <script type="text/javascript" src="/src/busdata.js"></script>
+  <script type="text/javascript" src="/src/polar.js"></script>
+  <script type="text/javascript" src="/src/map.js"></script>
+  <script type="text/javascript" src="/src/windgraph.js"></script>
+  <script type="text/javascript" src="/src/sailgauge.js"></script>
+  <script type="text/javascript" src="/slidingTimeWindow.js"></script>
+  <script type="text/javascript" src="/d3.v3/d3.v3.js"></script>
+  <script src="/leaflet-0.6.4/leaflet.js"></script>
+  <link rel="stylesheet" href="/leaflet-0.6.4/leaflet.css"/>
+  <link rel="stylesheet" href="/styles/colors.css"/>
 </head>
 <body>
 <section class="content s1 sp">
@@ -30,7 +30,7 @@
       </div>
       <div id="polar" >
       </div>
-      <div id="busdatacontainer" style="overflow: scroll">
+      <div id="bus" style="overflow: scroll">
         <div id="busdata"/>
       </div>
     </div>
@@ -70,7 +70,7 @@
     for (var propertyKey in pages) {
       pages[propertyKey].setVisible(propertyKey === elementId);
     }
-    if (elementId === 'busdatacontainer') {
+    if (elementId === 'bus') {
       busdataPrimus = Primus.connect("http://" + window.location.host + "/",
           {reconnect: {
             maxDelay: 60000,
@@ -117,13 +117,27 @@
     disableScroll: true,
     stopPropagation: false,
     callback: function (index, elem) {
-      updateConnectionsOnSwipeDivId(elem.getAttribute('id'));
+      var theId = elem.getAttribute('id');
+      updateConnectionsOnSwipeDivId(theId);
+      try {
+        window.history.replaceState({}, '', '/swipe/' + theId);
+      } catch (ex) {
+        //ignore
+      }
     },
     transitionEnd: function (index, elem) {
     }});
 
   $("#left").click(window.mySwipe.prev);
   $("#right").click(window.mySwipe.next);
+
+  var pathFragment = window.location.pathname.substring('/swipe'.length+1);
+  if (pathFragment.length > 0) {
+    var pageIndex = $('#' + pathFragment).index();
+    if (pageIndex >= 0) {
+      window.mySwipe.slide(pageIndex);
+    }
+  }
 
 </script>
 </body>

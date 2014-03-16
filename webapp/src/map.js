@@ -5,8 +5,8 @@ function Map() {
   this.shiftedMarkersBuffers = [this.markersBuffers[0], this.markersBuffers[2], this.markersBuffers[3], this.markersBuffers[1]];
   this.markerCounter = 0;
   this.pointIcon = L.icon({
-    iconUrl: 'images/point.png',
-    shadowUrl: 'images/point.png',
+    iconUrl: '/images/point.png',
+    shadowUrl: '/images/point.png',
 
     iconSize: [10, 10], // size of the icon
     shadowSize: [1, 1], // size of the shadow
