@@ -112,3 +112,10 @@ I don't want the extra hassle of Arduino and it looks a bit complicated to get u
 
 This is a learning experience in many respects. If you see something that could be improved let me know. If you see
 something you think you could fix please do & send a pull request!
+
+## Other related projects
+- http://sailboatinstruments.blogspot.fi/
+- http://pyxis.openseasproject.org/
+- http://www.42.co.nz/freeboard/ see also http://themarineinstallersrant.blogspot.fi/2013/05/arduino-weds-raspberry-freeboard-project.html
+- http://opencpn.org/ocpn/
+- http://openskipper.sourceforge.net/
