@@ -47,7 +47,7 @@
   var gaugePrimus;
 
 
-  var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true",
+  var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true&treeData=true",
       {reconnect: {
         maxDelay: 15000,
         minDelay: 500,
@@ -55,8 +55,15 @@
       }});
 
   var gaugeData = new Bacon.Bus();
+  var treeData = [];
   gaugePrimus.on('data', function (data) {
     gaugeData.push(data);
+    if (data.id != undefined) {
+      if (typeof treeData[data.id] === 'undefined') {
+        treeData[data.id] = new Bacon.Bus();
+      }
+      treeData[data.id].push(data.value);
+    }
   });
 
   var busdataPrimus = undefined;
@@ -92,7 +99,7 @@
     polar : new Polar(),
     windgraph : new Windgraph(),
     map: new Map(),
-    sailgauge : new SailGauge()
+    sailgauge : new SailGauge(treeData)
   }
 
   pages.polar.init("#polar");

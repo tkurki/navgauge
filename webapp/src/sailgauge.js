@@ -1,10 +1,12 @@
-function SailGauge() {
+function SailGauge(treeData) {
   this.visible = true;
   this.apparentWindStream = new Bacon.Bus();
   this.apparentWindStream.throttle(200).onValue(this.updateApparentWind.bind(this));
   this.trueWindStream = new Bacon.Bus();
   this.trueWindStream.throttle(200).onValue(this.updateTrueWind.bind(this));
   this.trueWindAngleStream = this.trueWindStream.map(function(msg) {return Number(msg.angle);});
+  treeData['navigation.headingNorth'] = new Bacon.Bus();
+  treeData['navigation.headingNorth'].onValue(this.updateCourse.bind(this));
 }
 
 SailGauge.prototype = {
@@ -241,7 +243,6 @@ SailGauge.prototype = {
         this.depthStream.push(msg);
         break;
       case 'course':
-        this.updateCourse(msg);
         this.courseStream.push(msg);
         break;
       case 'speed':
@@ -264,8 +265,8 @@ SailGauge.prototype = {
   },
   trackTrue: 0,
   bearingToMark: 45,
-  updateCourse: function (msg) {
-    this.trackTrue = msg.heading;
+  updateCourse: function (value) {
+    this.trackTrue = value;
     d3.select('#tracktruetext').text(this.trackTrue.toFixed(0) + '°');
     this.rotateAnimated('#rose', -1 * this.trackTrue, 400, 400, 200);
     d3.select('#marktext').attr("transform", "rotate(" + (-1 * this.bearingToMark + this.trackTrue) + " 400 118)");
