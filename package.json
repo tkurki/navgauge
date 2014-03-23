@@ -19,6 +19,9 @@
     "winston": "0.7",
     "express": "3.x"
   },
+  "devDependencies": {
+    "supertest": "0.10"
+  },
   "engine": "0.10.16",
   "devDependencies": {
     "should": "~2.0.2",
