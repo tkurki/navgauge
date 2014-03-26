@@ -85,7 +85,6 @@
         }});
 
     gaugePrimus.on('data', function (msg) {
-      console.log(msg);
       switch (msg.type) {
         case 'depth':
           depth.setValueAnimated(msg.depth);
@@ -177,16 +176,16 @@
     });
     var boatClicks = $("#boatslist>ul>li>a").asEventStream('click');
     boatClicks.onValue(function(msg) {
-      speed.setMaxMeasuredValue(0);
-      depth.setMaxMeasuredValue(0);
-      speed.setValue(0);
-      depth.setValue(0);
-      compass.setValue(0);
       var url = msg.target.attributes['data-href'].value;
       if (!url.indexOf('http://')) {
         url = "http://" + window.location.host + url;
       }
       connectTo(url);
+      speed.setMaxMeasuredValue(0);
+      depth.setMaxMeasuredValue(0);
+      speed.setValue(0);
+      depth.setValue(0);
+      compass.setValue(0);
     });
     boatClicks.map('.target.text').assign($("#boatslist>a"), 'text');
   });
