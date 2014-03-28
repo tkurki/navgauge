@@ -13,13 +13,13 @@
   <script src="lib/Bacon.js"></script>
   <script src="lib/bacon.jquery.min.js"></script>
   <script src="primus/primus.js"></script>
+  <script src="lib/underscore-min.js"></script>
   <link  href="css/bootstrap.css" rel="stylesheet"></link>
 </head>
 <body onload="init();" style="background-color:#000">
 
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
-    <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
         <span class="sr-only">Toggle navigation</span>
@@ -58,9 +58,9 @@
   </div><!-- /.container-fluid -->
 </nav>
 
-<canvas id="speedCanvas" width="25%" height="25%"></canvas>
-<canvas id="depthCanvas" width="25%" height="25%"></canvas>
-<canvas id="compassCanvas" width="25%" height="25%"></canvas>
+<canvas id="speedCanvas" ></canvas>
+<canvas id="depthCanvas" ></canvas>
+<canvas id="compassCanvas"></canvas>
 
 <script>
   $('#helpbutton').popover();
@@ -70,12 +70,25 @@
   var compass;
   var gaugePrimus;
 
-  function connectTo(url) {
-    if (typeof gaugePrimus != "undefined" ) {
-      console.log("Disconnecting first");
-      gaugePrimus.end();
-    }
+  var propertyIs = function(key, value) {
+    return function(obj) {
+      return obj[key] === value;
+    };
+  };
 
+  var bus = new Bacon.Bus();
+
+  bus.filter(propertyIs('id', 'navigation.headingNorth')).onValue(function(msg){
+    compass.setValueAnimated(msg.value);
+  });
+  bus.filter(propertyIs('type', 'depth')).onValue(function(msg){
+    depth.setValueAnimated(msg.depth);
+  });
+  bus.filter(propertyIs('type', 'speed')).onValue(function(msg){
+    speed.setValueAnimated(msg.knots);
+  });
+
+  function connectTo(url) {
     console.log("Connecting to:" + url);
     gaugePrimus = Primus.connect(url,
         {reconnect: {
@@ -85,24 +98,7 @@
         }});
 
     gaugePrimus.on('data', function (msg) {
-      switch (msg.type) {
-        case 'depth':
-          depth.setValueAnimated(msg.depth);
-          break;
-        case 'course':
-          compass.setValueAnimated(msg.heading);
-          break;
-        case 'speed':
-          speed.setValueAnimated(msg.knots);
-          break;
-      }
-      switch (msg.id) {
-        case 'navigation.headingNorth':
-          compass.setValueAnimated(msg.value);
-          break;
-      }
-      gaugeData.push(msg);
-
+      bus.push(msg);
     });
   }
 
@@ -149,20 +145,6 @@
     });
   }
 
-  var gaugeData = new Bacon.Bus();
-
-  gaugeData.filter(function(msg){msg.type === 'speed'})
-      .scan(0, function(old, incoming) {incoming.knots> old ? incoming.knots : old})
-      .changes()
-      .onValue(function(value) {
-        speed.setMaxMeasuredValue(value);
-      });
-  gaugeData.filter(function(msg){msg.type === 'depth'})
-      .scan(0, function(old, incoming) {incoming.knots> old ? incoming.knots : old})
-      .changes()
-      .onValue(function(value) {
-        depth.setMaxMeasuredValue(value);
-      });
 
   $.ajax({ url : "/api/0.1/vessels"}).done(function(result) {
     var boatslist = $("#boatslist>ul");
@@ -180,12 +162,19 @@
       if (!url.indexOf('http://')) {
         url = "http://" + window.location.host + url;
       }
-      connectTo(url);
-      speed.setMaxMeasuredValue(0);
-      depth.setMaxMeasuredValue(0);
-      speed.setValue(0);
-      depth.setValue(0);
-      compass.setValue(0);
+      if (typeof gaugePrimus != "undefined" ) {
+        console.log("Disconnecting");
+        gaugePrimus.end();
+      }
+      //wait 500 milliseconds for all previous messages to be supposedly handled first
+      setTimeout(function(){
+        speed.setMaxMeasuredValue(0);
+        depth.setMaxMeasuredValue(0);
+        speed.setValue(0);
+        depth.setValue(0);
+        compass.setValue(0);
+        connectTo(url);
+      }, 500);
     });
     boatClicks.map('.target.text').assign($("#boatslist>a"), 'text');
   });
