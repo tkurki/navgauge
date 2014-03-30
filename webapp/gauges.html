@@ -80,16 +80,16 @@
 
   var bus = new Bacon.Bus();
 
-  bus.filter(propertyIs('id', 'navigation.headingNorth')).throttle(2000).onValue(function(msg){
+  bus.filter(propertyIs('id', 'navigation.headingNorth')).onValue(function(msg){
     compass.setValueAnimated(msg.value);
   });
-  bus.filter(propertyIs('id', 'navigation.depth')).throttle(2000).onValue(function(msg){
+  bus.filter(propertyIs('id', 'navigation.depth')).onValue(function(msg){
     depth.setValueAnimated(msg.value);
   });
-  bus.filter(propertyIs('id', 'navigation.speedOverGround')).throttle(2000).onValue(function(msg){
+  bus.filter(propertyIs('id', 'navigation.speedOverGround')).onValue(function(msg){
     speed.setValueAnimated(msg.value);
   });
-  bus.filter(propertyIs('id', 'environmental.apparentWindDirection')).throttle(2000).onValue(function(msg){
+  bus.filter(propertyIs('id', 'environmental.apparentWindDirection')).onValue(function(msg){
     wind.setValueAnimatedLatest(msg.value);
   });
 

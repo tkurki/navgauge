@@ -17,7 +17,8 @@
     "primus": "1.4",
     "ws": "0.4.30",
     "winston": "0.7",
-    "express": "3.x"
+    "express": "3.x",
+    "moment": "2.5"
   },
   "devDependencies": {
     "supertest": "0.10"
