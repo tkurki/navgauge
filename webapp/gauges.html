@@ -60,6 +60,8 @@
 <canvas id="speedCanvas" ></canvas>
 <canvas id="depthCanvas" ></canvas>
 <canvas id="compassCanvas"></canvas>
+<canvas id="windCanvas"></canvas>
+
 
 <script>
   $('#helpbutton').popover();
@@ -67,6 +69,7 @@
   var speed;
   var depth;
   var compass;
+  var wind;
   var gaugePrimus;
 
   var propertyIs = function(key, value) {
@@ -77,15 +80,19 @@
 
   var bus = new Bacon.Bus();
 
-  bus.filter(propertyIs('id', 'navigation.headingNorth')).onValue(function(msg){
+  bus.filter(propertyIs('id', 'navigation.headingNorth')).throttle(2000).onValue(function(msg){
     compass.setValueAnimated(msg.value);
   });
-  bus.filter(propertyIs('type', 'depth')).onValue(function(msg){
-    depth.setValueAnimated(msg.depth);
+  bus.filter(propertyIs('id', 'navigation.depth')).throttle(2000).onValue(function(msg){
+    depth.setValueAnimated(msg.value);
   });
-  bus.filter(propertyIs('type', 'speed')).onValue(function(msg){
-    speed.setValueAnimated(msg.knots);
+  bus.filter(propertyIs('id', 'navigation.speedOverGround')).throttle(2000).onValue(function(msg){
+    speed.setValueAnimated(msg.value);
   });
+  bus.filter(propertyIs('id', 'environmental.apparentWindDirection')).throttle(2000).onValue(function(msg){
+    wind.setValueAnimatedLatest(msg.value);
+  });
+
 
   function connectTo(url) {
     console.log("Connecting to:" + url);
@@ -142,6 +149,16 @@
       rotateFace: true,
       pointerType: steelseries.PointerType.TYPE5
     });
+
+    wind = new steelseries.WindDirection('windCanvas', {
+      frameDesign: steelseries.FrameDesign.TILTED_BLACK,
+      size: 400,
+      lcdVisible: true,
+      degreeScaleHalf: true,
+      pointSymbolsVisible: false,
+      pointerType: steelseries.PointerType.TYPE5,
+    });
+
   }
 
 
