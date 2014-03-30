@@ -113,6 +113,10 @@ I don't want the extra hassle of Arduino and it looks a bit complicated to get u
 This is a learning experience in many respects. If you see something that could be improved let me know. If you see
 something you think you could fix please do & send a pull request!
 
+There is an ongoing discussion & preliminary specification for a generic, open REST api and data model for navigation-related data at
+- https://github.com/tkurki/navgauge/wiki/_pages
+- https://github.com/tkurki/navgauge/issues/4
+
 ## Other related projects
 - http://sailboatinstruments.blogspot.fi/
 - http://pyxis.openseasproject.org/
