@@ -5,8 +5,8 @@ function SailGauge(treeData) {
   this.trueWindStream = new Bacon.Bus();
   this.trueWindStream.throttle(200).onValue(this.updateTrueWind.bind(this));
   this.trueWindAngleStream = this.trueWindStream.map(function(msg) {return Number(msg.angle);});
-  treeData['navigation.headingNorth'] = new Bacon.Bus();
-  treeData['navigation.headingNorth'].onValue(this.updateCourse.bind(this));
+  treeData['navigation.courseOverGround'] = new Bacon.Bus();
+  treeData['navigation.courseOverGround'].onValue(this.updateCourse.bind(this));
 }
 
 SailGauge.prototype = {
