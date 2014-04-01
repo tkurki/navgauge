@@ -80,7 +80,7 @@
 
   var bus = new Bacon.Bus();
 
-  bus.filter(propertyIs('id', 'navigation.headingNorth')).onValue(function(msg){
+  bus.filter(propertyIs('id', 'navigation.courseOverGround')).onValue(function(msg){
     compass.setValueAnimated(msg.value);
   });
   bus.filter(propertyIs('id', 'navigation.depth')).onValue(function(msg){
