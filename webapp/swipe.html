@@ -47,7 +47,7 @@
   var gaugePrimus;
 
 
-  var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true&treeData=true",
+  var gaugePrimus = Primus.connect("http://" + window.location.host + "/?gaugedata=true&treedata=default",
       {reconnect: {
         maxDelay: 15000,
         minDelay: 500,
