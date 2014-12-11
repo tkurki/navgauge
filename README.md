@@ -72,7 +72,7 @@ bin/server.js and takes the following options:
 
 
  Take a look at `cassiopeia`, `plaka` and `freya` under `lib/boats/`, roll your own and add .log() statements to the
- incoming  streams in `lib/streams.js` to see what your data actually looks like.
+ incoming  streams in [your boat configuration file](https://github.com/tkurki/navgauge/blob/424f50804a4243d33a6b4fc87e26b3777aea886a/lib/boats/plaka.js#L13) to see what your data actually looks like.
 
 
 ## Why Navgauge?
